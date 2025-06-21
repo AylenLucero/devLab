@@ -19,7 +19,7 @@ public class DBConnection {
     
     public void connectar(){
         try {
-            conn = DriverManager.getConnection("jdbc:sqlserver://206.189.237.186:14111;databaseName=Equipo8-Progra:DevLab;encrypt=false;user=alucero;password=Sanclemente1");
+            conn = DriverManager.getConnection("jdbc:sqlserver://206.189.237.186:14111;databaseName=Equipo8-Progra:DevLab;encrypt=false;user=alucero;password=");
             System.out.println("Se extablecio la conneccion con l BD");
         } catch(SQLException e) {
             System.out.println("La BD no se pudo conectar" + e.getMessage());
