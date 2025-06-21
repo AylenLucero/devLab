@@ -8,26 +8,34 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 public class Login {
-    public void loginUsuario(DBConnection conn, Scanner scanner, String tipoUsuario) {
+    private DBConnection conn;
+    private Scanner scanner;
+
+    public Login(DBConnection conn, Scanner scanner) {
+        this.conn = conn;
+        this.scanner = scanner;
+    }
+    
+    public void loginUsuario(String tipoUsuario) {
         boolean encontrado = false;
         do {
             System.out.println("Ingrese usuario de " + tipoUsuario + ": ");
-            int usuario = scanner.nextInt();
-            scanner.nextLine();
+            int usuario = this.scanner.nextInt();
+            this.scanner.nextLine();
             System.out.println("Ingrese contrasena: ");
-            String contrasena = scanner.nextLine();
+            String contrasena = this.scanner.nextLine();
 
             if(conn.BuscarUser(usuario, contrasena, tipoUsuario)) {
                 System.out.println("Bienvenido!");
                 encontrado = true;
             } else {
                 System.out.println("El usuario no fue encontrado! ");
-                encontrado = subMenu(conn,scanner,tipoUsuario);
+                encontrado = subMenu(tipoUsuario);
             }
         } while (!encontrado);
     }
     
-    public boolean subMenu(DBConnection conn, Scanner scanner, String tipoUsuario) {
+    public boolean subMenu(String tipoUsuario) {
         System.out.println("1)Reintentar");
         if(tipoUsuario == "cliente") {
             System.out.println("2)Registrarse");
@@ -35,14 +43,13 @@ public class Login {
         } else {
             System.out.println("2)Volver al menu principal");
         }
-        int opcionNoEncontrado = scanner.nextInt();
+        int opcionNoEncontrado = this.scanner.nextInt();
         switch(opcionNoEncontrado) {
             case 1:
                 return false;
             case 2:
-                //FALTA LLAMAR A LA FUTURA FUNCIION DEL REGISTRO
                 if(tipoUsuario == "cliente")
-                    registrarUsuario(conn,scanner);
+                    registrarUsuario();
                 return true;
             case 3:
                 if(tipoUsuario == "administrador")
@@ -50,20 +57,20 @@ public class Login {
                 return true;
             default:
                 System.out.println("Opcion incorrecta");
-                subMenu(conn,scanner,tipoUsuario);
+                subMenu(tipoUsuario);
                 break;
         }
         return false;
     }
     
-    public void registrarUsuario(DBConnection conn,Scanner scanner) {
+    public void registrarUsuario() {
         int dni = 0;
         String contrasena;
 
         while (true) {
             System.out.println("Ingrese su DNI (solo numeros): ");
-            String input = scanner.nextLine();
-            scanner.nextLine();
+            String input = this.scanner.nextLine();
+            this.scanner.nextLine();
             try {
                 dni = Integer.parseInt(input);
                 break; 
@@ -73,7 +80,7 @@ public class Login {
         }
 
         System.out.println("Ingrese su contrasena: ");
-        contrasena = scanner.nextLine();
+        contrasena = this.scanner.nextLine();
         
         conn.InsrtarUsuario(dni, contrasena, "cliente");
     }

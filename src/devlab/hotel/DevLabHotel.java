@@ -13,7 +13,7 @@ public class DevLabHotel {
     public static void main(String[] args) {
         DBConnection conn = new DBConnection();
         Scanner scanner = new Scanner(System.in);
-        Login login = new Login();
+        Login login = new Login(conn, scanner);
 
         boolean salir = false;
         while (!salir) {
@@ -27,13 +27,13 @@ public class DevLabHotel {
 
             switch (opcion) {
                 case "1":
-                    login.loginUsuario(conn, scanner,"cliente");
+                    login.loginUsuario("cliente");
                     break;
                 case "2":
-                    login.registrarUsuario(conn, scanner);
+                    login.registrarUsuario();
                     break;
                 case "3":
-                    login.loginUsuario(conn, scanner,"administrador");
+                    login.loginUsuario("administrador");
                     break;
                 case "4":
                     salir = true;
