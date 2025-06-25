@@ -11,6 +11,10 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.PreparedStatement;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 public class DBConnection {
     private Connection conn;
     
@@ -173,16 +177,17 @@ public class DBConnection {
 
     // -------------  ADMIN RESERVA
     
-    public void InsertarReserva(int idHabitacion, String fechaInicio, String fechaFin, int cantidadDias, float precioTotal) {
+    public void InsertarReserva(int idHabitacion, String fechaInicio, String fechaFin, int cantidadDias, float precioTotal, int DNI) {
         try {
-            String sql = "INSERT INTO dbo.Reservas (id_habitacion, Fecha_inicio, Fecha_fin, Cantidad_dias, Precio_total) VALUES (?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO dbo.Reservas (id_habitacion, Fecha_inicio, Fecha_fin, Cantidad_dias, Precio_total, DNI_cliente) VALUES (?, ?, ?, ?, ?,?)";
             PreparedStatement stmt = this.conn.prepareStatement(sql);
             stmt.setInt(1, idHabitacion);
             stmt.setString(2, fechaInicio);
             stmt.setString(3, fechaFin);
             stmt.setInt(4, cantidadDias);
             stmt.setFloat(5, precioTotal);
-
+            stmt.setInt(6, DNI);
+            
             int filas = stmt.executeUpdate();
             System.out.println(filas > 0 ? "Reserva registrada correctamente." : "No se pudo registrar la reserva.");
         } catch (SQLException e) {
@@ -339,5 +344,93 @@ public class DBConnection {
         return false;
     }
     
+    public List<Map<String, Object>> ObtenerHabitacionesDisponiblesPorCapacidadYFecha(int cantidadPersonas, LocalDate fechaInicio, LocalDate fechaFin) {
+    List<Map<String, Object>> disponibles = new ArrayList<>();
+
+        String sql = "SELECT * FROM Habitaciones WHERE cantidad_personas >= ?";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, cantidadPersonas);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                int id = rs.getInt("ID_habitacion"); 
+                float precio = rs.getFloat("Precio_noche");
+                int C_doble = rs.getInt("C_doble"); 
+                int C_simple = rs.getInt("C_simple"); 
+
+                boolean ocupado = ExisteSuperposicionReserva(id, fechaInicio, fechaFin);
+                if (!ocupado) {
+                    Map<String, Object> hab = new HashMap<>();
+                    hab.put("id", id);
+                    hab.put("Cantidad_personas", rs.getInt("Cantidad_personas"));
+                    hab.put("Precio_noche", precio);
+                    hab.put("C_doble", C_doble);
+                    hab.put("C_simple", C_simple);
+                    disponibles.add(hab);
+                }
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error al obtener habitaciones disponibles: " + e.getMessage());
+        }
+
+        return disponibles;
+    }
+
+    public List<Integer> ObtenerTodosLosIdHabitaciones() {
+        List<Integer> ids = new ArrayList<>();
+        try {
+            String sql = "SELECT ID_habitacion FROM dbo.Habitaciones";
+            PreparedStatement stmt = this.conn.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                ids.add(rs.getInt("ID_habitacion"));
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al obtener IDs de habitaciones: " + e.getMessage());
+        }
+        return ids;
+    }
     
+    public void InsertarCliente(int dni, String nombre, String apellido, int edad, String telefono, String email) {
+        if (ClienteExiste(dni)) {
+            System.out.println("El cliente ya existe. No se insertó nada.");
+            return;
+        }
+        
+        try {
+            String sql = "INSERT INTO dbo.Clientes (DNI, Nombre, Apellido, Edad, Telefono, Email) VALUES (?, ?, ?, ?, ?, ?)";
+            PreparedStatement stmt = this.conn.prepareStatement(sql);
+            stmt.setInt(1, dni);
+            stmt.setString(2, nombre);
+            stmt.setString(3, apellido);
+            stmt.setInt(4, edad);
+            stmt.setString(5, telefono);
+            stmt.setString(6, email);
+
+            int filas = stmt.executeUpdate();
+            if (filas > 0) {
+                System.out.println("Cliente insertado correctamente.");
+            } else {
+                System.out.println("No se pudo insertar el cliente.");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al insertar cliente: " + e.getMessage());
+        }
+    }
+    
+    public boolean ClienteExiste(int dni) {
+        try {
+            String sql = "SELECT 1 FROM dbo.Clientes WHERE DNI = ?";
+            PreparedStatement stmt = this.conn.prepareStatement(sql);
+            stmt.setInt(1, dni);
+            ResultSet rs = stmt.executeQuery();
+            return rs.next(); // Devuelve true si existe
+        } catch (SQLException e) {
+            System.out.println("Error al verificar si el cliente existe: " + e.getMessage());
+            return false; // En caso de error, se asume que no existe para evitar insertar mal
+        }
+    }
 }

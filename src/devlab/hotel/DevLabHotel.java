@@ -12,8 +12,11 @@ public class DevLabHotel {
      */
     public static void main(String[] args) {
         DBConnection conn = new DBConnection();
+        Thread hilo = new Thread(new VerificadorDeOcupacion(conn));
         Scanner scanner = new Scanner(System.in);
-        Login login = new Login(conn, scanner);
+        Login login = new Login(conn, scanner, hilo);
+        
+        hilo.start();
 
         boolean salir = false;
         while (!salir) {

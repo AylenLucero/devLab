@@ -23,6 +23,7 @@ public class AdminReservas {
     }
 
     public void AgregarReserva() {
+    Clientes CL = new Clientes(conn, scan);
     int terminar;
 
     do {
@@ -62,9 +63,10 @@ public class AdminReservas {
 
             float precioTotal = cantidadDias * precioNoche;
 
-            conn.InsertarReserva(idHabitacion, fechaInicioStr, fechaFinStr, (int)cantidadDias, precioTotal);
+            int DNI_cliente = CL.SolicitarDatosCliente();
+            conn.InsertarReserva(idHabitacion, fechaInicioStr, fechaFinStr, (int)cantidadDias, precioTotal, DNI_cliente);
             
-            conn.ActualizarDisponibilidadHabitacion(idHabitacion, "Ocupado");
+            //conn.ActualizarDisponibilidadHabitacion(idHabitacion, "Ocupado");
 
         } catch (DateTimeParseException e) {
             System.out.println("Formato de fecha invalido. Use YYYY-MM-DD.");

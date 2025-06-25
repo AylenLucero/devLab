@@ -12,12 +12,16 @@ public class Login {
     private Scanner scanner;
     private AdminHabitaciones adminHab;
     private AdminReservas adminRes;
+    private Reservas ClRes;
+    private Thread hilo;
 
-    public Login(DBConnection conn, Scanner scanner) {
+    public Login(DBConnection conn, Scanner scanner, Thread hilo) {
         this.conn = conn;
         this.scanner = scanner;
         adminHab = new AdminHabitaciones(conn, scanner);
         adminRes = new AdminReservas(conn, scanner);
+        ClRes = new Reservas(conn, scanner,hilo);
+        hilo = new Thread(new VerificadorDeOcupacion(conn));
     }
     
     public void loginUsuario(String tipoUsuario) {
@@ -82,14 +86,30 @@ public class Login {
                                 if(!input.equals("0")) System.out.println("Opcion invalida.");
                         }
                     }else{
-                        System.out.println("Menu user ");
+                        System.out.println("-------- MENU CLIENTE --------");
+                        System.out.println("Haga su RESERVA");
+                        System.out.println("1. Agregar Reserva");
+                        System.out.println("2. Editar Reserva");
+                        System.out.println("3. Eliminar Reserva");
+                        System.out.println("0. Salir");
+                        System.out.print("Opcion: ");
+                        input = this.scanner.nextLine();
+                        
+                        switch (input) {
+                            case "1":
+                                ClRes.AgregarReserva();
+                                break;
+                            case "2":
+                                adminRes.EditarReserva();
+                                break;
+                            case "3":
+                                adminRes.EliminarReserva();
+                                break;
+                            default:
+                                if(!input.equals("0")) System.out.println("Opcion invalida.");
+                        }
                     }
-                
                 }
-                
-                
-                
-                
             } else {
                 System.out.println("El usuario no fue encontrado! ");
                 encontrado = subMenu(tipoUsuario);
