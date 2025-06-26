@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 public class DBConnection {
     private Connection conn;
     
@@ -38,25 +39,23 @@ public class DBConnection {
     
     // -------------  LOGIN
     
-    public boolean BuscarUser(int usuario, String contrasena, String tipo) {
-        ResultSet rs;
+   public String BuscarUser(int dni, String contrasena) {
         try {
-            Statement statement = this.conn.createStatement();
-            rs = statement.executeQuery("SELECT * FROM dbo.Login");
-            while(rs.next()) {
-                int DNI = rs.getInt("DNI");
-                String contraseña = rs.getString("Contrasena");
-                String tipoUsuario = rs.getString("Tipo");
+            String sql = "SELECT tipo FROM Login WHERE DNI = ? AND Contrasena = ?";
+            PreparedStatement stmt = this.conn.prepareStatement(sql);
+            stmt.setInt(1, dni);
+            stmt.setString(2, contrasena);
+            ResultSet rs = stmt.executeQuery();
 
-                if (usuario == DNI && contrasena.equals(contraseña) && tipoUsuario.equals(tipo)) {
-                    return true;
-                } 
+            if (rs.next()) {
+                return rs.getString("tipo"); 
             }
         } catch (SQLException e) {
-            return false;
+            System.out.println("Error al autenticar usuario: " + e.getMessage());
         }
-        return false;
+        return null; // no se encontró usuario
     }
+
     
     public void InsrtarUsuario(int DNI, String contrasena, String tipo) {
         try { 
@@ -70,7 +69,7 @@ public class DBConnection {
             if (filas > 0) {
                 System.out.println("Usuario insertado correctamente.");
             } else {
-                System.out.println("No se insertó ningún usuario.");
+                System.out.println("No se inserto ningun usuario.");
             }
         } catch (SQLException e) {
             System.out.println("La BD no se pudo insertar en el Login " + e.getMessage());
@@ -215,7 +214,66 @@ public class DBConnection {
             System.out.println("Error al mostrar reservas: " + e.getMessage());
         }
     }
+    
+    public boolean ExisteReservaPorDNI(int dniCliente) {
+        try {
+            String sql = "SELECT COUNT(*) FROM dbo.Reservas WHERE DNI_cliente = ?";
+            PreparedStatement stmt = this.conn.prepareStatement(sql);
+            stmt.setInt(1, dniCliente);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al verificar existencia de reserva por DNI: " + e.getMessage());
+        }
+        return false;
+    }
+    
+    public int ObtenerReservaPorDNI(int dniCliente) {
+        try {
+            String sql = "SELECT Id_reserva, Id_habitacion, Fecha_inicio, Fecha_fin FROM dbo.Reservas WHERE DNI_cliente = ?";
+            PreparedStatement stmt = this.conn.prepareStatement(sql);
+            stmt.setInt(1, dniCliente);
+            ResultSet rs = stmt.executeQuery();
 
+            List<Integer> idsDisponibles = new ArrayList<>();
+            System.out.println("Reservas encontradas para el cliente con DNI " + dniCliente + ":");
+
+            while (rs.next()) {
+                int idReserva = rs.getInt("Id_reserva");
+                int idHabitacion = rs.getInt("Id_habitacion");
+                String fechaInicio = rs.getString("Fecha_inicio");
+                String fechaFin = rs.getString("Fecha_fin");
+
+                System.out.println("- ID Reserva: " + idReserva + " | Habitacion: " + idHabitacion +
+                                   " | Desde: " + fechaInicio + " Hasta: " + fechaFin);
+
+                idsDisponibles.add(idReserva);
+            }
+
+            if (idsDisponibles.isEmpty()) {
+                return -1; // No hay reservas
+            }
+
+            Scanner scan = new Scanner(System.in);
+            System.out.println("Ingrese el ID de la reserva que desea editar:");
+            int seleccion = scan.nextInt();
+            scan.nextLine();
+
+            if (idsDisponibles.contains(seleccion)) {
+                return seleccion;
+            } else {
+                System.out.println("ID ingresado invalido.");
+                return -1;
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error al buscar reservas por DNI: " + e.getMessage());
+        }
+        return -1;
+    }
+    
     public void EditarReserva(int idReserva, int idHabitacion, String fechaInicio, String fechaFin, int cantidadDias, float precioTotal) {
         try {
             String sql = "UPDATE dbo.Reservas SET id_habitacion = ?, Fecha_inicio = ?, Fecha_fin = ?, Cantidad_dias = ?, Precio_total = ? WHERE id_reserva = ?";
@@ -343,6 +401,78 @@ public class DBConnection {
         }
         return false;
     }
+    
+    // ADMINISTRADOR
+    
+   public void InsertarAdministrador(int dni, String contraseña) {
+        try {
+            String sql = "INSERT INTO Login (DNI, Contrasena, Tipo) VALUES (?, ?, 'administrador')";
+            PreparedStatement stmt = this.conn.prepareStatement(sql);
+            stmt.setInt(1, dni);
+            stmt.setString(2, contraseña);
+
+            int filas = stmt.executeUpdate();
+            System.out.println(filas > 0 ? "Administrador agregado correctamente." : "No se pudo agregar el administrador.");
+        } catch (SQLException e) {
+            System.out.println("Error al insertar administrador: " + e.getMessage());
+        }
+    }
+    
+        public void ActualizarTipoAAdministrador(int dni) {
+         try {
+             String sql = "UPDATE Login SET Tipo = 'administrador' WHERE dni = ?";
+             PreparedStatement stmt = this.conn.prepareStatement(sql);
+             stmt.setInt(1, dni);
+
+             int filas = stmt.executeUpdate();
+             System.out.println(filas > 0 ? "El cliente ahora es administrador." : "No se pudo actualizar el rol.");
+         } catch (SQLException e) {
+             System.out.println("Error al actualizar rol: " + e.getMessage());
+         }
+     }
+   public String ObtenerTipoUsuario(int dni) {
+        try {
+            String sql = "SELECT Tipo FROM Login WHERE dni = ?";
+            PreparedStatement stmt = this.conn.prepareStatement(sql);
+            stmt.setInt(1, dni);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getString("Tipo");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al obtener tipo de usuario: " + e.getMessage());
+        }
+        return null;
+    }
+    
+    public void ActualizarTipoACliente(int dni) {
+        try {
+            String sql = "UPDATE Login SET Tipo = 'cliente' WHERE dni = ?";
+            PreparedStatement stmt = this.conn.prepareStatement(sql);
+            stmt.setInt(1, dni);
+
+            int filas = stmt.executeUpdate();
+            System.out.println(filas > 0 ? "Administrador convertido a cliente correctamente." : "No se pudo actualizar.");
+        } catch (SQLException e) {
+            System.out.println("Error al actualizar tipo: " + e.getMessage());
+        }
+    }
+    
+    public void EliminarUsuario(int dni) {
+        try {
+            String sql = "DELETE FROM Login WHERE dni = ?";
+            PreparedStatement stmt = this.conn.prepareStatement(sql);
+            stmt.setInt(1, dni);
+
+            int filas = stmt.executeUpdate();
+            System.out.println(filas > 0 ? "Administrador eliminado." : "No se pudo eliminar el usuario.");
+        } catch (SQLException e) {
+            System.out.println("Error al eliminar usuario: " + e.getMessage());
+        }
+    }
+   
+    // --- CLIENTE
+    
     
     public List<Map<String, Object>> ObtenerHabitacionesDisponiblesPorCapacidadYFecha(int cantidadPersonas, LocalDate fechaInicio, LocalDate fechaFin) {
     List<Map<String, Object>> disponibles = new ArrayList<>();
