@@ -27,7 +27,7 @@ public class VerificadorDeOcupacion implements Runnable {
             }
 
             try {
-                Thread.sleep(10000); // espera 10 segundos antes de volver a revisar
+                Thread.sleep(10000);
             } catch (InterruptedException ex) {
                 System.out.println("El hilo VerificadorDeOcupacion fue interrumpido.");
                 return; // salir del hilo si fue interrumpido
