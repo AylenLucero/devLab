@@ -1,192 +1,336 @@
 package devlab.hotel;
 
-/**
- *
- * @author Equipo
- */
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
 import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Login {
     private DBConnection conn;
-    private Scanner scanner;
+    private Scanner scanner; // Se mantiene pero no se usa en GUI
     private AdminHabitaciones adminHab;
     private AdminReservas adminRes;
     private Administrador admin;
     private Reservas ClRes;
     private Thread hilo;
+    private Styles style;
+    private static final Color COLOR_BEIGE = new Color(245, 245, 220);
 
+    // Constructor se mantiene igual
     public Login(DBConnection conn, Scanner scanner, Thread hilo) {
         this.conn = conn;
-        this.scanner = scanner;
-        adminHab = new AdminHabitaciones(conn, scanner);
-        adminRes = new AdminReservas(conn, scanner);
-        admin = new Administrador(conn, scanner);
+        this.scanner = scanner; // Scanner queda pero no se usa
+        this.hilo = hilo;
+        this.adminHab = new AdminHabitaciones(conn, null); // Scanner como null
+        this.adminRes = new AdminReservas(conn);
+        this.admin = new Administrador(conn, null);
+        this.ClRes = new Reservas(conn,hilo);
+        this.style = new Styles();
+    }
 
-        ClRes = new Reservas(conn, scanner,hilo);
-        hilo = new Thread(new VerificadorDeOcupacion(conn));
+    // Versión GUI del loginUsuario()
+    public void loginUsuarioGUI() {
+        JFrame frame = new JFrame("Inicio de Sesión");
+        frame.getContentPane().setBackground(COLOR_BEIGE);
+        frame.setSize(350, 200);
+
+        JPanel panel = new JPanel(new GridLayout(3, 2, 10, 10));
+        panel.setBackground(COLOR_BEIGE);
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        JLabel lblDni = new JLabel("DNI:");
+        JTextField txtDni = new JTextField();
+        JLabel lblPass = new JLabel("Contraseña:");
+        JPasswordField txtPass = new JPasswordField();
+        JButton btnLogin = style.crearBotonEstilizado("Ingresar");
+        JButton btnBack = style.crearBotonEstilizado("Volver");
+
+        btnLogin.addActionListener(e -> {
+            try {
+                int dni = Integer.parseInt(txtDni.getText());
+                String pass = new String(txtPass.getPassword());
+                String tipoUsuario = conn.BuscarUser(dni, pass);
+
+                if (tipoUsuario != null) {
+                    frame.dispose();
+                    mostrarMenuUsuarioGUI(dni, tipoUsuario);
+                    frame.setBackground(COLOR_BEIGE);
+                } else {
+                    JOptionPane.showMessageDialog(frame, 
+                        "Credenciales incorrectas", "Error", 
+                        JOptionPane.ERROR_MESSAGE);
+                    subMenuGUI("cliente", frame);
+                }
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(frame, 
+                    "DNI debe ser numérico", "Error", 
+                    JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        btnBack.addActionListener(e -> {
+            frame.dispose();
+            DevLabHotel.mostrarMenuPrincipal(this);
+        });
+
+        panel.add(lblDni);
+        panel.add(txtDni);
+        panel.add(lblPass);
+        panel.add(txtPass);
+        panel.add(btnLogin);
+        panel.add(btnBack);
+
+        frame.add(panel);
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+    }
+
+    // Versión GUI de registrarUsuario()
+    public void registrarUsuarioGUI() {
+        JFrame frame = new JFrame("Registro de Cliente");
+        frame.setSize(350, 200);
+
+        JPanel panel = new JPanel(new GridLayout(3, 2, 10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        JLabel lblDni = new JLabel("DNI:");
+        JTextField txtDni = new JTextField();
+        JLabel lblPass = new JLabel("Contraseña:");
+        JPasswordField txtPass = new JPasswordField();
+        JButton btnRegistrar = style.crearBotonEstilizado("Registrar");
+        JButton btnBack = style.crearBotonEstilizado("Volver");
+
+        btnRegistrar.addActionListener(e -> {
+            try {
+                int dni = Integer.parseInt(txtDni.getText());
+                String pass = new String(txtPass.getPassword());
+                conn.InsrtarUsuario(dni, pass, "cliente");
+                JOptionPane.showMessageDialog(frame, 
+                    "Registro exitoso!", "Éxito", 
+                    JOptionPane.INFORMATION_MESSAGE);
+                frame.dispose();
+                DevLabHotel.mostrarMenuPrincipal(this);
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(frame, 
+                    "DNI debe ser numérico", "Error", 
+                    JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        btnBack.addActionListener(e -> {
+            frame.dispose();
+            DevLabHotel.mostrarMenuPrincipal(this);
+        });
+
+        panel.add(lblDni);
+        panel.add(txtDni);
+        panel.add(lblPass);
+        panel.add(txtPass);
+        panel.add(btnRegistrar);
+        panel.add(btnBack);
+
+        frame.add(panel);
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+    }
+
+    private void mostrarMenuUsuarioGUI(int dni, String tipoUsuario) {
+        JFrame frame = new JFrame("Menú de " + tipoUsuario);
+        frame.setSize(600, 400);
+
+        JTabbedPane tabbedPane = new JTabbedPane();
+        tabbedPane.setBackground(COLOR_BEIGE);
+        tabbedPane.setForeground(Color.BLACK);
+
+        if (tipoUsuario.equalsIgnoreCase("administrador")) {
+            JPanel adminPanel = crearPanelAdministrador(dni);
+            tabbedPane.addTab("Bienvenido Administrador", adminPanel);
+            tabbedPane.setBackground(COLOR_BEIGE);
+            tabbedPane.setForeground(Color.BLACK);
+        } else {
+            JPanel clientePanel = crearPanelCliente();
+            tabbedPane.addTab("Bienvenido Cliente", clientePanel);
+        }
+
+        JButton btnSalir = style.crearBotonEstilizado("Cerrar Sesión");
+        btnSalir.addActionListener(e -> {
+            frame.dispose();
+            DevLabHotel.mostrarMenuPrincipal(this);
+        });
+
+        frame.add(tabbedPane, BorderLayout.CENTER);
+        frame.add(btnSalir, BorderLayout.SOUTH);
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+    }
+
+    private JPanel crearPanelAdministrador(int dni) {
+        JPanel panel = new JPanel(new GridLayout(0, 2, 10, 10));
+        panel.setBackground(new Color(230, 230, 210));
+
+        seccionHabitacion(panel);
+        seccionReserva(panel);
+        agregarBoton(panel, "Agregar Admin", () -> admin.AgregarAdministrador());
+        agregarBoton(panel, "Eliminar Admin", () -> admin.EliminarAdministrador());
+
+        return panel;
     }
     
-    public void loginUsuario() {
-    boolean encontrado = false;
-    String input = "";
+    private void seccionHabitacion (JPanel panel) {
+        // Botón principal de Habitaciones con menú desplegable
+        JButton btnHabitaciones = style.crearBotonEstilizado("Sección Habitaciones");
 
-    do {
-        System.out.println("Ingrese DNI de usuario:");
-        int usuario = this.scanner.nextInt();
-        this.scanner.nextLine();
+        // Crear el menú desplegable
+        JPopupMenu menuHabitaciones = new JPopupMenu();
+        menuHabitaciones.setBackground(new Color(230, 230, 210));
+        
+        // Añadir items al menú
+        JMenuItem itemVer = new JMenuItem("Ver Habitaciones");
+        itemVer.addActionListener(e -> adminHab.ListarHabitaciones());
+        menuHabitaciones.add(itemVer);
 
-        System.out.println("Ingrese contraseña:");
-        String contrasena = this.scanner.nextLine();
+        JMenuItem itemAgregar = new JMenuItem("Agregar Habitación");
+        itemAgregar.addActionListener(e -> adminHab.AgregarHabitacion());
+        menuHabitaciones.add(itemAgregar);
 
-        // Pedir tipo desde la base
-        String tipoUsuario = conn.BuscarUser(usuario, contrasena);
+        JMenuItem itemEditar = new JMenuItem("Editar Habitación");
+        itemEditar.addActionListener(e -> adminHab.EditarHabitacion());
+        menuHabitaciones.add(itemEditar);
 
-        if (tipoUsuario != null) {
-            encontrado = true;
+        JMenuItem itemEliminar = new JMenuItem("Eliminar Habitación");
+        itemEliminar.addActionListener(e -> adminHab.EliminarHabitacion());
+        menuHabitaciones.add(itemEliminar);
 
-            while (!input.equals("0")) {
-                if (tipoUsuario.equalsIgnoreCase("administrador")) {
-                    System.out.println("-------- MENU ADMINISTRADOR --------");
-                    System.out.println("Administracion de Habitaciones");
-                    System.out.println("1. Ver Habitaciones");
-                    System.out.println("2. Agregar Habitacion");
-                    System.out.println("3. Editar Habitacion");
-                    System.out.println("4. Eliminar Habitacion");
-                    System.out.println("Administracion de Reservas");
-                    System.out.println("5. Ver Reservas");
-                    System.out.println("6. Agregar Reserva");
-                    System.out.println("7. Editar Reserva");
-                    System.out.println("8. Eliminar Reserva");
-                    if (usuario == 40653615) {
-                        System.out.println("Administracion de Permisos");
-                        System.out.println("9. Agregar Administrador");
-                        System.out.println("10. Eliminar Administrador");
-                    }
-                    System.out.println("0. Salir");
-                    System.out.print("Opcion: ");
-                    input = this.scanner.nextLine();
+        // Configurar el botón para mostrar el menú
+        btnHabitaciones.addActionListener(e -> {
+            menuHabitaciones.show(btnHabitaciones, 0, btnHabitaciones.getHeight());
+        });
+        
+        btnHabitaciones.addActionListener(e -> {
+        // Mostrar el menú a la derecha del botón
+            menuHabitaciones.show(btnHabitaciones, btnHabitaciones.getWidth(), 0);
+        });
 
-                    switch (input) {
-                        case "1":
-                            adminHab.ListarHabitaciones();
-                            break;
-                        case "2":
-                            adminHab.AgregarHabitacion();
-                            break;
-                        case "3":
-                            adminHab.EditarHabitacion();
-                            break;
-                        case "4":
-                            adminHab.EliminarHabitacion();
-                            break;
-                        case "5":
-                            adminRes.ListarReservas();
-                            break;
-                        case "6":
-                            ClRes.AgregarReserva();
-                            break;
-                        case "7":
-                            adminRes.EditarReserva();
-                            break;
-                        case "8":
-                            adminRes.EliminarReserva();
-                            break;
-                        case "9":
-                            if (usuario == 40653615) admin.AgregarAdministrador();
-                            break;
-                        case "10":
-                            if (usuario == 40653615) admin.EliminarAdministrador();
-                            break;
-                        default:
-                            if (!input.equals("0")) System.out.println("Opcion invalida.");
-                    }
-                } else if (tipoUsuario.equalsIgnoreCase("cliente")) {
-                    System.out.println("-------- MENU CLIENTE --------");
-                    System.out.println("1. Agregar Reserva");
-                    System.out.println("2. Editar Reserva");
-                    System.out.println("3. Eliminar Reserva");
-                    System.out.println("0. Salir");
-                    System.out.print("Opcion: ");
-                    input = this.scanner.nextLine();
+        // Aplicar estilos al menú (código existente)
+        configurarEstiloMenu(menuHabitaciones);
 
-                    switch (input) {
-                        case "1":
-                            ClRes.AgregarReserva();
-                            break;
-                        case "2":
-                            adminRes.EditarReserva();
-                            break;
-                        case "3":
-                            adminRes.EliminarReserva();
-                            break;
-                        default:
-                            if (!input.equals("0")) System.out.println("Opción inválida.");
-                    }
-                } else {
-                    System.out.println("Tipo de usuario desconocido. Abortando.");
-                    break;
-                }
-            }
-
-        } else {
-            System.out.println("Usuario o contraseña incorrectos.");
-            encontrado = subMenu("cliente"); // o simplemente: encontrado = false;
-        }
-
-    } while (!encontrado);
-}
+        panel.add(btnHabitaciones);
+    }
     
-    public boolean subMenu(String tipoUsuario) {
-        System.out.println("1)Reintentar");
-        if(tipoUsuario == "cliente") {
-            System.out.println("2)Registrarse");
-            System.out.println("3)Volver al menu principal");
-        } else {
-            System.out.println("2)Volver al menu principal");
+    private void seccionReserva (JPanel panel) {
+        JButton btnHabitaciones = style.crearBotonEstilizado("Sección Reservas");
+
+        // Crear el menú desplegable
+        JPopupMenu menuHabitaciones = new JPopupMenu();
+        menuHabitaciones.setBackground(new Color(230, 230, 210));
+        
+        // Añadir items al menú
+        JMenuItem itemVer = new JMenuItem("Listar Reservas");
+        itemVer.addActionListener(e -> adminRes.ListarReservas());
+        menuHabitaciones.add(itemVer);
+
+        JMenuItem itemAgregar = new JMenuItem("Agregar Reserva");
+        itemAgregar.addActionListener(e -> ClRes.AgregarReserva());
+        menuHabitaciones.add(itemAgregar);
+
+        JMenuItem itemEditar = new JMenuItem("Editar Reserva");
+        itemEditar.addActionListener(e -> adminRes.EditarReserva());
+        menuHabitaciones.add(itemEditar);
+
+        JMenuItem itemEliminar = new JMenuItem("Eliminar Reserva");
+        itemEliminar.addActionListener(e -> adminRes.EliminarReserva());
+        menuHabitaciones.add(itemEliminar);
+
+        // Configurar el botón para mostrar el menú
+        btnHabitaciones.addActionListener(e -> {
+            menuHabitaciones.show(btnHabitaciones, 0, btnHabitaciones.getHeight());
+        });
+        
+        btnHabitaciones.addActionListener(e -> {
+        // Mostrar el menú a la derecha del botón
+            menuHabitaciones.show(btnHabitaciones, btnHabitaciones.getWidth(), 0);
+        });
+
+        // Aplicar estilos al menú (código existente)
+        configurarEstiloMenu(menuHabitaciones);
+
+        panel.add(btnHabitaciones);
+    }
+    
+    private void configurarEstiloMenu(JPopupMenu menu) {
+        menu.setBackground(new Color(230, 230, 210));
+        menu.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(180, 180, 160)),
+            BorderFactory.createEmptyBorder(2, 2, 2, 2)
+        ));
+
+        for (Component comp : menu.getComponents()) {
+            if (comp instanceof JMenuItem) {
+                JMenuItem item = (JMenuItem) comp;
+                item.setBackground(new Color(220, 220, 200));
+                item.setForeground(Color.BLACK);
+                item.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+                item.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));
+
+                item.addMouseListener(new MouseAdapter() {
+                    public void mouseEntered(MouseEvent e) {
+                        item.setBackground(new Color(210, 210, 190));
+                    }
+                    public void mouseExited(MouseEvent e) {
+                        item.setBackground(new Color(220, 220, 200));
+                    }
+                });
+            }
         }
-        int opcionNoEncontrado = this.scanner.nextInt();
-        switch(opcionNoEncontrado) {
+    }
+
+    private JPanel crearPanelCliente() {
+        JPanel panel = new JPanel(new GridLayout(0, 2, 10, 10));
+        panel.setBackground(new Color(230, 230, 210));
+        
+        agregarBoton(panel, "Agregar Reserva", () -> ClRes.AgregarReserva());
+        agregarBoton(panel, "Editar Reserva", () -> adminRes.EditarReserva());
+        agregarBoton(panel, "Eliminar Reserva", () -> adminRes.EliminarReserva());
+        
+        return panel;
+    }
+
+    private void agregarBoton(JPanel panel, String texto, Runnable accion) {
+        JButton boton = style.crearBotonEstilizado(texto);
+        boton.addActionListener(e -> accion.run());
+        panel.add(boton);
+    }
+
+    private void subMenuGUI(String tipoUsuario, JFrame parent) {
+        Object[] options = tipoUsuario.equals("cliente") ? 
+            new Object[]{"Reintentar", "Registrarse", "Volver"} :
+            new Object[]{"Reintentar", "Volver"};
+        
+        int opcion = JOptionPane.showOptionDialog(parent,
+            "¿Qué desea hacer?",
+            "Opción no válida",
+            JOptionPane.DEFAULT_OPTION,
+            JOptionPane.QUESTION_MESSAGE,
+            null,
+            options,
+            options[0]);
+        
+        switch(opcion) {
+            case 0: // Reintentar
+                break;
             case 1:
-                return false;
+                if (tipoUsuario.equals("cliente")) {
+                    parent.dispose();
+                    registrarUsuarioGUI();
+                } else {
+                    parent.dispose();
+                    DevLabHotel.mostrarMenuPrincipal(this);
+                }
+                break;
             case 2:
-                if(tipoUsuario == "cliente")
-                    registrarUsuario();
-                return true;
-            case 3:
-                if(tipoUsuario == "administrador")
-                    System.out.println("Opcion incorrecta");
-                return true;
-            default:
-                System.out.println("Opcion incorrecta");
-                subMenu(tipoUsuario);
+                parent.dispose();
+                DevLabHotel.mostrarMenuPrincipal(this);
                 break;
         }
-        return false;
     }
-    
-    public void registrarUsuario() {
-        int dni = 0;
-        String contrasena;
-
-        while (true) {
-            System.out.println("Ingrese su DNI (solo numeros): ");
-            String input = this.scanner.nextLine();
-            this.scanner.nextLine();
-            try {
-                dni = Integer.parseInt(input);
-                break; 
-            } catch (NumberFormatException e) {
-                System.out.println("DNI invalido. Debe contener solo numeros.");
-            }
-        }
-
-        System.out.println("Ingrese su contrasena: ");
-        contrasena = this.scanner.nextLine();
-        
-        conn.InsrtarUsuario(dni, contrasena, "cliente");
-    }
-    
-
 }

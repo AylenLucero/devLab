@@ -176,7 +176,7 @@ public class DBConnection {
 
     // -------------  ADMIN RESERVA
     
-    public void InsertarReserva(int idHabitacion, String fechaInicio, String fechaFin, int cantidadDias, float precioTotal, int DNI) {
+    public boolean InsertarReserva(int idHabitacion, String fechaInicio, String fechaFin, int cantidadDias, float precioTotal, int DNI) {
         try {
             String sql = "INSERT INTO dbo.Reservas (id_habitacion, Fecha_inicio, Fecha_fin, Cantidad_dias, Precio_total, DNI_cliente) VALUES (?, ?, ?, ?, ?,?)";
             PreparedStatement stmt = this.conn.prepareStatement(sql);
@@ -189,30 +189,37 @@ public class DBConnection {
             
             int filas = stmt.executeUpdate();
             System.out.println(filas > 0 ? "Reserva registrada correctamente." : "No se pudo registrar la reserva.");
+            if(filas>0)
+                return true;
+            else
+                return false;
         } catch (SQLException e) {
             System.out.println("Error al insertar reserva: " + e.getMessage());
+            return false;
         }
     }
 
-    public void MostrarReservas() {
+    public String MostrarReservas() {
+        StringBuilder sb = new StringBuilder();
         try {
             String sql = "SELECT * FROM dbo.Reservas";
             PreparedStatement stmt = this.conn.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
 
-            System.out.println("----- LISTADO DE RESERVAS -----");
+            sb.append("----- LISTADO DE RESERVAS -----\n");
             while (rs.next()) {
-                System.out.println("ID Reserva: " + rs.getInt("id_reserva"));
-                System.out.println("ID Habitacion: " + rs.getInt("id_habitacion"));
-                System.out.println("Fecha Inicio: " + rs.getString("Fecha_inicio"));
-                System.out.println("Fecha Fin: " + rs.getString("Fecha_fin"));
-                System.out.println("Cantidad de dias: " + rs.getInt("Cantidad_dias"));
-                System.out.println("Precio total: $" + rs.getFloat("Precio_total"));
-                System.out.println("--------------------------------");
+                sb.append("ID Reserva: ").append(rs.getInt("id_reserva")).append("\n");
+                sb.append("ID Habitacion: ").append(rs.getInt("id_habitacion")).append("\n");
+                sb.append("Fecha Inicio: ").append(rs.getString("Fecha_inicio")).append("\n");
+                sb.append("Fecha Fin: ").append(rs.getString("Fecha_fin")).append("\n");
+                sb.append("Cantidad de dias: ").append(rs.getInt("Cantidad_dias")).append("\n");
+                sb.append("Precio total: $").append(rs.getFloat("Precio_total")).append("\n");
+                sb.append("--------------------------------\n");
             }
         } catch (SQLException e) {
-            System.out.println("Error al mostrar reservas: " + e.getMessage());
+            sb.append("Error al mostrar reservas: ").append(e.getMessage());
         }
+        return sb.toString();
     }
     
     public boolean ExisteReservaPorDNI(int dniCliente) {
@@ -274,7 +281,7 @@ public class DBConnection {
         return -1;
     }
     
-    public void EditarReserva(int idReserva, int idHabitacion, String fechaInicio, String fechaFin, int cantidadDias, float precioTotal) {
+    public boolean EditarReserva(int idReserva, int idHabitacion, String fechaInicio, String fechaFin, int cantidadDias, float precioTotal) {
         try {
             String sql = "UPDATE dbo.Reservas SET id_habitacion = ?, Fecha_inicio = ?, Fecha_fin = ?, Cantidad_dias = ?, Precio_total = ? WHERE id_reserva = ?";
             PreparedStatement stmt = this.conn.prepareStatement(sql);
@@ -287,12 +294,17 @@ public class DBConnection {
 
             int filas = stmt.executeUpdate();
             System.out.println(filas > 0 ? "Reserva actualizada correctamente." : "No se encontro la reserva con ese ID.");
+            if(filas > 0)
+                return true;
+            else
+                return false;
         } catch (SQLException e) {
             System.out.println("Error al editar reserva: " + e.getMessage());
+            return false;
         }
     }
 
-    public void EliminarReserva(int idReserva) {
+    public boolean EliminarReserva(int idReserva) {
         try {
             String sql = "DELETE FROM dbo.Reservas WHERE id_reserva = ?";
             PreparedStatement stmt = this.conn.prepareStatement(sql);
@@ -300,8 +312,14 @@ public class DBConnection {
 
             int filas = stmt.executeUpdate();
             System.out.println(filas > 0 ? "Reserva eliminada correctamente." : "No se encontro ninguna reserva con ese ID.");
+            if(filas > 0) {
+                return true;
+            } else {
+                return false;
+            }
         } catch (SQLException e) {
             System.out.println("Error al eliminar reserva: " + e.getMessage());
+            return false;
         }
     }
     
@@ -554,6 +572,19 @@ public class DBConnection {
     public boolean ClienteExiste(int dni) {
         try {
             String sql = "SELECT 1 FROM dbo.Clientes WHERE DNI = ?";
+            PreparedStatement stmt = this.conn.prepareStatement(sql);
+            stmt.setInt(1, dni);
+            ResultSet rs = stmt.executeQuery();
+            return rs.next(); // Devuelve true si existe
+        } catch (SQLException e) {
+            System.out.println("Error al verificar si el cliente existe: " + e.getMessage());
+            return false; // En caso de error, se asume que no existe para evitar insertar mal
+        }
+    }
+    
+    public boolean ExisteAdmin (int dni) {
+        try {
+            String sql = "SELECT 1 FROM dbo.Login WHERE DNI = ? AND Tipo = administrador";
             PreparedStatement stmt = this.conn.prepareStatement(sql);
             stmt.setInt(1, dni);
             ResultSet rs = stmt.executeQuery();

@@ -1,14 +1,15 @@
 package devlab.hotel;
 
+import javax.swing.*;
+import java.awt.*;
 import java.util.Scanner;
 
 /**
- *
- * @author Rodrigo
+ * @author Equipo
  */
 public class Administrador {
     
-     private DBConnection conn;
+    private DBConnection conn;
     private Scanner scan;
     
     public Administrador(DBConnection conn, Scanner scan) {
@@ -17,60 +18,144 @@ public class Administrador {
     }
     
     public void AgregarAdministrador() {
+        // Crear ventana de diálogo
+        JPanel panel = new JPanel(new GridLayout(3, 2, 5, 5));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
+        JLabel lblDni = new JLabel("DNI del administrador:");
+        JTextField txtDni = new JTextField(10);
+        
+        JLabel lblPassword = new JLabel("Contraseña:");
+        JPasswordField txtPassword = new JPasswordField(10);
+        
+        panel.add(lblDni);
+        panel.add(txtDni);
+        panel.add(lblPassword);
+        panel.add(txtPassword);
 
-        System.out.println("Ingrese el DNI del administrador:");
-        int dni = scan.nextInt();
-        scan.nextLine();
+        int result = JOptionPane.showConfirmDialog(
+            null, 
+            panel, 
+            "Agregar Administrador", 
+            JOptionPane.OK_CANCEL_OPTION,
+            JOptionPane.PLAIN_MESSAGE
+        );
 
-        System.out.println("Ingrese la contraseña:");
-        String contraseña = scan.nextLine();
+        if (result == JOptionPane.OK_OPTION) {
+            try {
+                int dni = Integer.parseInt(txtDni.getText());
+                String contraseña = new String(txtPassword.getPassword());
 
-        // Lógica según existencia y tipo
-        String tipo = conn.ObtenerTipoUsuario(dni);
+                // Validar campos
+                if (contraseña.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, 
+                        "La contraseña no puede estar vacía", 
+                        "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
 
-        if (tipo == null) {
-            // No existe en la tabla, lo agregamos como nuevo administrador
-            conn.InsertarAdministrador(dni, contraseña);
-        } else if (tipo.equalsIgnoreCase("administrador")) {
-            System.out.println("Este usuario ya es un administrador.");
-        } else if (tipo.equalsIgnoreCase("cliente")) {
-            conn.ActualizarTipoAAdministrador(dni);
-        } else {
-            System.out.println("Rol desconocido. No se pudo procesar.");
+                // Lógica según existencia y tipo
+                String tipo = conn.ObtenerTipoUsuario(dni);
+
+                if (tipo == null) {
+                    conn.InsertarAdministrador(dni, contraseña);
+                    JOptionPane.showMessageDialog(null, 
+                        "Administrador agregado exitosamente", 
+                        "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                } else if (tipo.equalsIgnoreCase("administrador")) {
+                    JOptionPane.showMessageDialog(null, 
+                        "Este usuario ya es un administrador", 
+                        "Advertencia", JOptionPane.WARNING_MESSAGE);
+                } else if (tipo.equalsIgnoreCase("cliente")) {
+                    conn.ActualizarTipoAAdministrador(dni);
+                    JOptionPane.showMessageDialog(null, 
+                        "Cliente actualizado a administrador", 
+                        "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(null, 
+                        "Rol desconocido. No se pudo procesar", 
+                        "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(null, 
+                    "DNI debe ser un número válido", 
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
     
     public void EliminarAdministrador() {
+        // Crear ventana de diálogo
+        JPanel panel = new JPanel(new GridLayout(2, 1, 5, 5));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        System.out.println("Ingrese el DNI del administrador que desea eliminar:");
-        int dni = scan.nextInt();
-        scan.nextLine(); // limpiar buffer
+        JLabel lblDni = new JLabel("DNI del administrador a eliminar:");
+        JTextField txtDni = new JTextField(10);
+        
+        panel.add(lblDni);
+        panel.add(txtDni);
 
-        String tipo = conn.ObtenerTipoUsuario(dni);
+        int result = JOptionPane.showConfirmDialog(
+            null, 
+            panel, 
+            "Eliminar Administrador", 
+            JOptionPane.OK_CANCEL_OPTION,
+            JOptionPane.PLAIN_MESSAGE
+        );
 
-        if (tipo == null) {
-            System.out.println("No existe ningun usuario con ese DNI.");
-            return;
-        }
+        if (result == JOptionPane.OK_OPTION) {
+            try {
+                int dni = Integer.parseInt(txtDni.getText());
+                String tipo = conn.ObtenerTipoUsuario(dni);
 
-        if (!tipo.equalsIgnoreCase("administrador")) {
-            System.out.println("El usuario con ese DNI no es un administrador.");
-            return;
-        }
+                if (tipo == null) {
+                    JOptionPane.showMessageDialog(null, 
+                        "No existe ningún usuario con ese DNI", 
+                        "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
 
-        System.out.println("¿Desea convertirlo en cliente (c) o eliminarlo completamente (e)?");
-        String opcion = scan.nextLine().trim().toLowerCase();
+                if (!tipo.equalsIgnoreCase("administrador")) {
+                    JOptionPane.showMessageDialog(null, 
+                        "El usuario no es un administrador", 
+                        "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
 
-        switch (opcion) {
-            case "c":
-                conn.ActualizarTipoACliente(dni);
-                break;
-            case "e":
-                conn.EliminarUsuario(dni);
-                break;
-            default:
-                System.out.println("Opción no válida. Cancelado.");
+                // Opciones para el usuario
+                Object[] options = {"Convertir a Cliente", "Eliminar", "Cancelar"};
+                int opcion = JOptionPane.showOptionDialog(
+                    null,
+                    "¿Qué acción desea realizar?",
+                    "Opciones de Administrador",
+                    JOptionPane.DEFAULT_OPTION,
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    options,
+                    options[0]
+                );
+
+                switch (opcion) {
+                    case 0: // Convertir a cliente
+                        conn.ActualizarTipoACliente(dni);
+                        JOptionPane.showMessageDialog(null, 
+                            "Administrador convertido a cliente", 
+                            "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                        break;
+                    case 1: // Eliminar
+                        conn.EliminarUsuario(dni);
+                        JOptionPane.showMessageDialog(null, 
+                            "Usuario eliminado exitosamente", 
+                            "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                        break;
+                    default: // Cancelar
+                        break;
+                }
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(null, 
+                    "DNI debe ser un número válido", 
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 }
