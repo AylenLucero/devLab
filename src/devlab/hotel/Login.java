@@ -41,7 +41,7 @@ public class Login {
         String contrasena = this.scanner.nextLine();
 
         // Pedir tipo desde la base
-        String tipoUsuario = conn.BuscarUser(usuario, contrasena);
+        String tipoUsuario = conn.buscarUser(usuario, contrasena);
 
         if (tipoUsuario != null) {
             encontrado = true;
@@ -185,7 +185,7 @@ public class Login {
         System.out.println("Ingrese su contrasena: ");
         contrasena = this.scanner.nextLine();
         
-        conn.InsrtarUsuario(dni, contrasena, "cliente");
+        conn.insrtarUsuario(dni, contrasena, "cliente");
     }
     
 

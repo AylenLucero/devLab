@@ -40,7 +40,7 @@ public class DBConnection {
     
     // -------------  LOGIN
     
-   public String BuscarUser(int dni, String contrasena) {
+   public String buscarUser(int dni, String contrasena) {
         try {
             String sql = "SELECT tipo FROM Login WHERE DNI = ? AND Contrasena = ?";
             PreparedStatement stmt = this.conn.prepareStatement(sql);
@@ -58,7 +58,7 @@ public class DBConnection {
     }
 
     
-    public void InsrtarUsuario(int DNI, String contrasena, String tipo) {
+    public void insrtarUsuario(int DNI, String contrasena, String tipo) {
         try { 
             String sql = "INSERT INTO dbo.Login (Contrasena, Tipo, DNI) VALUES (?, ?, ?)";
             PreparedStatement stmt = this.conn.prepareStatement(sql);
@@ -130,7 +130,7 @@ public class DBConnection {
         }
     }
     
-    public void MostrarHabitaciones() {
+    public void mostrarHabitaciones() {
         try {
             String sql = "SELECT ID_habitacion, Cantidad_personas, C_doble, C_simple, Disponibilidad, Precio_noche FROM dbo.Habitaciones";
             PreparedStatement stmt = this.conn.prepareStatement(sql);
@@ -563,5 +563,28 @@ public class DBConnection {
             System.out.println("Error al verificar si el cliente existe: " + e.getMessage());
             return false; // En caso de error, se asume que no existe para evitar insertar mal
         }
+    }
+    
+    public List<Map<String, Object>> mostrarHabitaciones2() {
+        List<Map<String, Object>> habitaciones = new ArrayList<>();
+        try {
+            String sql = "SELECT ID_habitacion, Cantidad_personas, C_doble, C_simple, Disponibilidad, Precio_noche FROM dbo.Habitaciones";
+            PreparedStatement stmt = this.conn.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Map<String, Object> habitacion = new HashMap<>();
+                habitacion.put("id", rs.getInt("ID_habitacion"));
+                habitacion.put("personas", rs.getInt("Cantidad_personas"));
+                habitacion.put("dobles", rs.getInt("C_doble"));
+                habitacion.put("simples", rs.getInt("C_simple"));
+                habitacion.put("disponibilidad", rs.getString("Disponibilidad"));
+                habitacion.put("precio", rs.getFloat("Precio_noche"));
+                habitaciones.add(habitacion);
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al mostrar habitaciones: " + e.getMessage());
+        }
+        return habitaciones;
     }
 }

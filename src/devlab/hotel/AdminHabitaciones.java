@@ -53,7 +53,7 @@ public class AdminHabitaciones {
     }
      
     public void ListarHabitaciones() {
-        conn.MostrarHabitaciones();
+        conn.mostrarHabitaciones();
     }
     
     public void EditarHabitacion() {

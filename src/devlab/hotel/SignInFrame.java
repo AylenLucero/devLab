@@ -102,7 +102,7 @@ public class SignInFrame extends javax.swing.JFrame {
         int usuario = Integer.parseInt(this.DniField.getText());
         String password = this.PassField.getText();
         
-        String tipoUsuario = conn.BuscarUser(usuario, password);
+        String tipoUsuario = conn.buscarUser(usuario, password);
         
         if(tipoUsuario != null){
             if(tipoUsuario.equals( "administrador")) {
