@@ -1,5 +1,6 @@
 package devlab.hotel;
 
+//nueva ventana
 /**
  *
  * @author Equipo

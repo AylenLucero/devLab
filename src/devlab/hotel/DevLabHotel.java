@@ -16,8 +16,13 @@ public class DevLabHotel {
         Scanner scanner = new Scanner(System.in);
         Login login = new Login(conn, scanner, hilo);
         
+        LoginFrame vs = new LoginFrame();
+        vs.setVisible(true);
+        
         hilo.start();
-
+        
+        
+        /*
         boolean salir = false;
         while (!salir) {
             System.out.println("=== MENU DE LOGIN ===");
@@ -47,6 +52,7 @@ public class DevLabHotel {
         }
 
         scanner.close();
+        */
     }
     
 }
