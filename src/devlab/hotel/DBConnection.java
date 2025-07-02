@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import javax.swing.JOptionPane;
 public class DBConnection {
     private Connection conn;
     
@@ -93,11 +94,12 @@ public class DBConnection {
 
             int filas = stmt.executeUpdate();
             if (filas > 0) {
-                System.out.println("Habitacion cargada correctamente...");
+                JOptionPane.showMessageDialog(null, "Habitacion cargada con exito.");
             } else {
-                System.out.println("No se pudo cargar la habitacion.");
+                JOptionPane.showMessageDialog(null, "No se pudo cargar la habitacion.");
             }
         } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Hubo un error, contacte con el desarrollador");
             System.out.println("Hubo un error" + e.getMessage());
         }
     }
@@ -120,23 +122,24 @@ public class DBConnection {
 
             int filas = stmt.executeUpdate();
             if (filas > 0) {
-                System.out.println("habitacion actualizada correctamente...");
+                JOptionPane.showMessageDialog(null, "habitacion actualizada correctamente.");
             } else {
-                System.out.println("No se encontró la habitacion con ese ID.");
+               JOptionPane.showMessageDialog(null, "No se encontró la habitacion con ese ID.");
             }
 
         } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Hubo un error, contacte con el desarrollador");
             System.out.println("Error al actualizar la habitacion: " + e.getMessage());
         }
     }
     
-    public void mostrarHabitaciones() {
+    public List<Habitacion> obtenerHabitaciones() {
+        List<Habitacion> habitaciones = new ArrayList<>();
         try {
             String sql = "SELECT ID_habitacion, Cantidad_personas, C_doble, C_simple, Disponibilidad, Precio_noche FROM dbo.Habitaciones";
             PreparedStatement stmt = this.conn.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
 
-            System.out.println("----- LISTADO DE HABITACIONES -----");
             while (rs.next()) {
                 int id = rs.getInt("ID_habitacion");
                 int personas = rs.getInt("Cantidad_personas");
@@ -145,17 +148,13 @@ public class DBConnection {
                 String disponibilidad = rs.getString("Disponibilidad");
                 float precio = rs.getFloat("Precio_noche");
 
-                System.out.println("ID: " + id);
-                System.out.println("Cantidad de personas: " + personas);
-                System.out.println("Camas dobles: " + dobles);
-                System.out.println("Camas simples: " + simples);
-                System.out.println("Disponibilidad: " + disponibilidad);
-                System.out.println("Precio por noche: $" + precio);
-                System.out.println("------------------------------------");
+                Habitacion habitacion = new Habitacion(id, personas, dobles, simples, disponibilidad, precio);
+                habitaciones.add(habitacion);
             }
         } catch (SQLException e) {
-            System.out.println("Error al mostrar habitaciones: " + e.getMessage());
+            System.out.println("Error al obtener habitaciones: " + e.getMessage());
         }
+        return habitaciones;
     }
     
     public void EliminarHabitacion(int idHabitacion) {
@@ -166,12 +165,14 @@ public class DBConnection {
 
             int filas = stmt.executeUpdate();
             if (filas > 0) {
-                System.out.println("habitacion eliminada correctamente.");
+                JOptionPane.showMessageDialog(null, "habitacion eliminada correctamente.");
             } else {
-                System.out.println("No se encontro ninguna habitacion con ese ID.");
+               JOptionPane.showMessageDialog(null, "No se encontro ninguna habitacion con ese ID.");
             }
         } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Hubo un error, contacte con el desarrollador");
             System.out.println("Error al eliminar la habitacion: " + e.getMessage());
+            
         }
     }
 

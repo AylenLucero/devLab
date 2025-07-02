@@ -108,9 +108,8 @@ public class LoginFrame extends javax.swing.JFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
-        SignInFrame vs = new SignInFrame(); // Abre la otra ventana
-        this.dispose(); 
-        vs.setVisible(true);
+        new SignInXFrame().setVisible(true);
+           this.dispose();
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
