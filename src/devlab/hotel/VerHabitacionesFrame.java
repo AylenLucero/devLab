@@ -131,7 +131,7 @@ public class VerHabitacionesFrame extends javax.swing.JFrame {
 
     
     private void containerCards() {
-        List<Map<String, Object>> disponibles = conn.mostrarReservas();
+        List<Map<String, Object>> disponibles = conn.mostrarHabitaciones2();
         
         Cards.removeAll();
 
@@ -149,45 +149,41 @@ public class VerHabitacionesFrame extends javax.swing.JFrame {
         
     }
     private javax.swing.JPanel crearCardHabitacion(Map<String, Object> hab) {
-    javax.swing.JPanel card = new javax.swing.JPanel(new java.awt.BorderLayout(10, 10));
-    card.setBorder(javax.swing.BorderFactory.createCompoundBorder(
-        javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5),
-        javax.swing.BorderFactory.createLineBorder(java.awt.Color.GRAY)
-    ));
-    card.setPreferredSize(new java.awt.Dimension(500, 180));
+        javax.swing.JPanel card = new javax.swing.JPanel(new java.awt.BorderLayout(10, 10));
+        card.setBorder(javax.swing.BorderFactory.createCompoundBorder(
+            javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5),
+            javax.swing.BorderFactory.createLineBorder(java.awt.Color.GRAY)
+        ));
+        card.setPreferredSize(new java.awt.Dimension(500, 180));
+        try {
+            javax.swing.ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource("img/habitacion.jpg"));
+            java.awt.Image scaledImg = icon.getImage().getScaledInstance(120, 130, java.awt.Image.SCALE_SMOOTH); 
+            javax.swing.JLabel imgLabel = new javax.swing.JLabel(new javax.swing.ImageIcon(scaledImg));
+            card.add(imgLabel, java.awt.BorderLayout.WEST);
+        } catch (Exception ex) {
+            System.err.println("No se pudo cargar la imagen: " + ex.getMessage());
+        }
 
-    JPanel content = new JPanel(new BorderLayout());
-    content.setOpaque(false);
+        javax.swing.JPanel content = new javax.swing.JPanel();
+        content.setLayout(new javax.swing.BoxLayout(content, javax.swing.BoxLayout.Y_AXIS));
+        content.setOpaque(false);
+        int id = (int) hab.get("id");
+        int capacidad = (int) hab.get("personas");
+        float precioNoche = ((Float) hab.get("precio"));
+        int cDoble = (int) hab.get("dobles");
+        int cSimple = (int) hab.get("simples");
+        String disponibilidad = (String) hab.get("disponibilidad");
 
-    int ID_res = (int) hab.get("id_reserva");
+        content.add(new javax.swing.JLabel("ID: " + id));
+        content.add(new javax.swing.JLabel("Capacidad: " + capacidad));
+        content.add(new javax.swing.JLabel("Precio por noche: $" + precioNoche));
+        content.add(new javax.swing.JLabel("Camas dobles: " + cDoble));
+        content.add(new javax.swing.JLabel("Camas simples: " + cSimple));
+        content.add(new javax.swing.JLabel("Disponibilidad: " + disponibilidad));
 
-    JPanel infoPanel = new JPanel();
-    infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
-    infoPanel.setOpaque(false);
-    infoPanel.add(new JLabel("ID de la Reserva: " + ID_res));
-    infoPanel.add(new JLabel("ID de la habitacion: $" + hab.get("id_habitacion")));
-    infoPanel.add(new JLabel("Fecha de inicio: " + hab.get("Fecha_inicio")));
-    infoPanel.add(new JLabel("Fecha fin: " + hab.get("Fecha_fin")));
-    infoPanel.add(new JLabel("Cantidad de dias: " + hab.get("Cantidad_dias")));
-    infoPanel.add(new JLabel("Precio total: " + hab.get("Precio_total")));
+        card.add(content, BorderLayout.CENTER);
 
-    content.add(infoPanel, BorderLayout.CENTER);
-
-    // Botón al pie
-    JButton reservarBtn = new JButton("Reservar");
-    reservarBtn.setFont(new java.awt.Font("Segoe UI", 0, 12));
-    reservarBtn.addActionListener(e -> conn.EliminarReserva(ID_res));
-
-    JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-    btnPanel.setOpaque(false);
-    btnPanel.add(reservarBtn);
-
-    content.add(btnPanel, BorderLayout.SOUTH);
-
-    // ESTA LÍNEA FALTABA 👇
-    card.add(content, BorderLayout.CENTER);
-
-    return card;
+        return card;
 }
 
 
