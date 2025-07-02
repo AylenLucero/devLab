@@ -218,16 +218,18 @@ public class EliminarReservasFrame extends javax.swing.JFrame {
         javax.swing.JPanel content = new javax.swing.JPanel();
         content.setLayout(new javax.swing.BoxLayout(content, javax.swing.BoxLayout.Y_AXIS));
         content.setOpaque(false);
+        
+
         int ID = (int) hab.get("id_reserva");
         var fecha = hab.get("fecha_inicio");
         content.add(new JLabel("ID de reserva: " + ID));
         content.add(new JLabel("ID de habitación: " + hab.get("id_habitacion")));
         content.add(new JLabel("Fecha de inicio: " + fecha));
         content.add(new JLabel("Fecha de fin: " + hab.get("fecha_fin")));
-        content.add(new JLabel("Cantidad de dias: " + hab.get("cantidad_dias")));
-        content.add(new JLabel("Precio total: " + hab.get("Precio_total")));
+        content.add(new JLabel("Cantidad de dias: " + hab.get("Cantidad_dias")));
+        content.add(new JLabel("Precio total: $" + hab.get("Precio_total")));
         content.add(new JLabel("DNI del cliente: " + hab.get("DNI_cliente")));
-
+        
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         
         try {
