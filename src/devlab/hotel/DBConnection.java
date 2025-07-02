@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import javax.swing.JOptionPane;
 public class DBConnection {
     private Connection conn;
     
@@ -109,11 +110,12 @@ public class DBConnection {
 
             int filas = stmt.executeUpdate();
             if (filas > 0) {
-                System.out.println("Habitacion cargada correctamente...");
+                JOptionPane.showMessageDialog(null, "Habitacion cargada con exito.");
             } else {
-                System.out.println("No se pudo cargar la habitacion.");
+                JOptionPane.showMessageDialog(null, "No se pudo cargar la habitacion.");
             }
         } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Hubo un error, contacte con el desarrollador");
             System.out.println("Hubo un error" + e.getMessage());
         }
     }
@@ -136,23 +138,24 @@ public class DBConnection {
 
             int filas = stmt.executeUpdate();
             if (filas > 0) {
-                System.out.println("habitacion actualizada correctamente...");
+                JOptionPane.showMessageDialog(null, "habitacion actualizada correctamente.");
             } else {
-                System.out.println("No se encontró la habitacion con ese ID.");
+               JOptionPane.showMessageDialog(null, "No se encontró la habitacion con ese ID.");
             }
 
         } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Hubo un error, contacte con el desarrollador");
             System.out.println("Error al actualizar la habitacion: " + e.getMessage());
         }
     }
     
-    public void mostrarHabitaciones() {
+    public List<Habitacion> obtenerHabitaciones() {
+        List<Habitacion> habitaciones = new ArrayList<>();
         try {
             String sql = "SELECT ID_habitacion, Cantidad_personas, C_doble, C_simple, Disponibilidad, Precio_noche FROM dbo.Habitaciones";
             PreparedStatement stmt = this.conn.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
 
-            System.out.println("----- LISTADO DE HABITACIONES -----");
             while (rs.next()) {
                 int id = rs.getInt("ID_habitacion");
                 int personas = rs.getInt("Cantidad_personas");
@@ -161,17 +164,13 @@ public class DBConnection {
                 String disponibilidad = rs.getString("Disponibilidad");
                 float precio = rs.getFloat("Precio_noche");
 
-                System.out.println("ID: " + id);
-                System.out.println("Cantidad de personas: " + personas);
-                System.out.println("Camas dobles: " + dobles);
-                System.out.println("Camas simples: " + simples);
-                System.out.println("Disponibilidad: " + disponibilidad);
-                System.out.println("Precio por noche: $" + precio);
-                System.out.println("------------------------------------");
+                Habitacion habitacion = new Habitacion(id, personas, dobles, simples, disponibilidad, precio);
+                habitaciones.add(habitacion);
             }
         } catch (SQLException e) {
-            System.out.println("Error al mostrar habitaciones: " + e.getMessage());
+            System.out.println("Error al obtener habitaciones: " + e.getMessage());
         }
+        return habitaciones;
     }
     
     public void EliminarHabitacion(int idHabitacion) {
@@ -182,12 +181,14 @@ public class DBConnection {
 
             int filas = stmt.executeUpdate();
             if (filas > 0) {
-                System.out.println("habitacion eliminada correctamente.");
+                JOptionPane.showMessageDialog(null, "habitacion eliminada correctamente.");
             } else {
-                System.out.println("No se encontro ninguna habitacion con ese ID.");
+               JOptionPane.showMessageDialog(null, "No se encontro ninguna habitacion con ese ID.");
             }
         } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Hubo un error, contacte con el desarrollador");
             System.out.println("Error al eliminar la habitacion: " + e.getMessage());
+            
         }
     }
 
@@ -211,27 +212,30 @@ public class DBConnection {
         }
     }
 
-    public void MostrarReservas() {
+    public List<Map<String, Object>> mostrarReservas() {
+        List<Map<String, Object>> reservas = new ArrayList<>();
         try {
             String sql = "SELECT * FROM dbo.Reservas";
             PreparedStatement stmt = this.conn.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
 
-            System.out.println("----- LISTADO DE RESERVAS -----");
             while (rs.next()) {
-                System.out.println("ID Reserva: " + rs.getInt("id_reserva"));
-                System.out.println("ID Habitacion: " + rs.getInt("id_habitacion"));
-                System.out.println("Fecha Inicio: " + rs.getString("Fecha_inicio"));
-                System.out.println("Fecha Fin: " + rs.getString("Fecha_fin"));
-                System.out.println("Cantidad de dias: " + rs.getInt("Cantidad_dias"));
-                System.out.println("Precio total: $" + rs.getFloat("Precio_total"));
-                System.out.println("--------------------------------");
+                Map<String, Object> reserva = new HashMap<>();
+                reserva.put("id_reserva", rs.getInt("id_reserva"));
+                reserva.put("id_habitacion", rs.getInt("id_habitacion"));
+                reserva.put("Fecha_inicio", rs.getString("Fecha_inicio"));
+                reserva.put("Fecha_fin", rs.getString("Fecha_fin"));
+                reserva.put("Cantidad_dias", rs.getInt("Cantidad_dias"));
+                reserva.put("Precio_total", rs.getFloat("Precio_total"));
+                reserva.put("DNI_cliente", rs.getInt("DNI_cliente"));
+                reservas.add(reserva);
             }
         } catch (SQLException e) {
             System.out.println("Error al mostrar reservas: " + e.getMessage());
         }
+        return reservas;
     }
-    
+
     public boolean ExisteReservaPorDNI(int dniCliente) {
         try {
             String sql = "SELECT COUNT(*) FROM dbo.Reservas WHERE DNI_cliente = ?";
@@ -247,49 +251,28 @@ public class DBConnection {
         return false;
     }
     
-    public int ObtenerReservaPorDNI(int dniCliente) {
+    public List<Map<String, Object>> ObtenerReservasPorDNI(int dniCliente) {
+        List<Map<String, Object>> reservas = new ArrayList<>();
         try {
             String sql = "SELECT Id_reserva, Id_habitacion, Fecha_inicio, Fecha_fin FROM dbo.Reservas WHERE DNI_cliente = ?";
             PreparedStatement stmt = this.conn.prepareStatement(sql);
             stmt.setInt(1, dniCliente);
             ResultSet rs = stmt.executeQuery();
 
-            List<Integer> idsDisponibles = new ArrayList<>();
-            System.out.println("Reservas encontradas para el cliente con DNI " + dniCliente + ":");
-
             while (rs.next()) {
-                int idReserva = rs.getInt("Id_reserva");
-                int idHabitacion = rs.getInt("Id_habitacion");
-                String fechaInicio = rs.getString("Fecha_inicio");
-                String fechaFin = rs.getString("Fecha_fin");
-
-                System.out.println("- ID Reserva: " + idReserva + " | Habitacion: " + idHabitacion +
-                                   " | Desde: " + fechaInicio + " Hasta: " + fechaFin);
-
-                idsDisponibles.add(idReserva);
+                Map<String, Object> fila = new HashMap<>();
+                fila.put("id_reserva", rs.getInt("Id_reserva"));
+                fila.put("id_habitacion", rs.getInt("Id_habitacion"));
+                fila.put("fecha_inicio", rs.getString("Fecha_inicio"));
+                fila.put("fecha_fin", rs.getString("Fecha_fin"));
+                reservas.add(fila);
             }
-
-            if (idsDisponibles.isEmpty()) {
-                return -1; // No hay reservas
-            }
-
-            Scanner scan = new Scanner(System.in);
-            System.out.println("Ingrese el ID de la reserva que desea editar:");
-            int seleccion = scan.nextInt();
-            scan.nextLine();
-
-            if (idsDisponibles.contains(seleccion)) {
-                return seleccion;
-            } else {
-                System.out.println("ID ingresado invalido.");
-                return -1;
-            }
-
         } catch (SQLException e) {
             System.out.println("Error al buscar reservas por DNI: " + e.getMessage());
         }
-        return -1;
+        return reservas;
     }
+
     
     public void EditarReserva(int idReserva, int idHabitacion, String fechaInicio, String fechaFin, int cantidadDias, float precioTotal) {
         try {
@@ -309,18 +292,21 @@ public class DBConnection {
         }
     }
 
-    public void EliminarReserva(int idReserva) {
+    public boolean EliminarReserva(int idReserva) {
         try {
             String sql = "DELETE FROM dbo.Reservas WHERE id_reserva = ?";
             PreparedStatement stmt = this.conn.prepareStatement(sql);
             stmt.setInt(1, idReserva);
 
             int filas = stmt.executeUpdate();
-            System.out.println(filas > 0 ? "Reserva eliminada correctamente." : "No se encontro ninguna reserva con ese ID.");
+            System.out.println(filas > 0 ? "Reserva eliminada correctamente." : "No se encontró ninguna reserva con ese ID.");
+            return filas > 0;
         } catch (SQLException e) {
             System.out.println("Error al eliminar reserva: " + e.getMessage());
+            return false;
         }
     }
+
     
     public float ObtenerPrecioHabitacion(int idHabitacion) {
         try {

@@ -13,6 +13,7 @@ public class DevLabHotel {
     public static void main(String[] args) {
         DBConnection conn = new DBConnection();
         Thread hilo = new Thread(new VerificadorDeOcupacion(conn));
+        Thread hiloRes = new Thread(new VerificadorDeTerminacionDeReserva(conn));
         Scanner scanner = new Scanner(System.in);
         Login login = new Login(conn, scanner, hilo);
         
@@ -20,6 +21,7 @@ public class DevLabHotel {
         vs.setVisible(true);
         
         hilo.start();
+        hiloRes.start();
         
         
         /*

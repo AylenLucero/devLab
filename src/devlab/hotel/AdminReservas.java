@@ -21,11 +21,11 @@ public class AdminReservas {
         this.conn = conn;
         this.scan = scan;
     }
-
+/*
     public void ListarReservas() {
         conn.MostrarReservas();
     }
-
+*/
   public void EditarReserva() {
         System.out.println("Ingrese el DNI del cliente:");
         int dniCliente = scan.nextInt();
@@ -38,14 +38,14 @@ public class AdminReservas {
         }
 
         // Obtener la última reserva de ese cliente
-        int idReserva = conn.ObtenerReservaPorDNI(dniCliente);
+        /*int idReserva = conn.ObtenerReservaPorDNI(dniCliente);
 
         if (idReserva == -1) {
             System.out.println("No se pudo obtener la reserva del cliente.");
             return;
-        }
+        }*/
 
-        System.out.println("Ingrese el nuevo ID de habitacion:");
+        /*System.out.println("Ingrese el nuevo ID de habitacion:");
         int idHabitacion = scan.nextInt();
         scan.nextLine();
 
@@ -83,7 +83,7 @@ public class AdminReservas {
 
         } catch (DateTimeParseException e) {
             System.out.println("Formato de fecha invalido. Use YYYY-MM-DD.");
-        }
+        }*/
     }
 
     public void EliminarReserva() {

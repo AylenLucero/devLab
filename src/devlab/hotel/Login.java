@@ -70,7 +70,6 @@ public class Login {
 
                     switch (input) {
                         case "1":
-                            adminHab.ListarHabitaciones();
                             break;
                         case "2":
                             adminHab.AgregarHabitacion();
@@ -82,7 +81,7 @@ public class Login {
                             adminHab.EliminarHabitacion();
                             break;
                         case "5":
-                            adminRes.ListarReservas();
+                            //adminRes.ListarReservas();
                             break;
                         case "6":
                             ClRes.AgregarReserva();

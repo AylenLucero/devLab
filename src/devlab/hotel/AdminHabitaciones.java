@@ -52,9 +52,7 @@ public class AdminHabitaciones {
         }while(terminar != 0);
     }
      
-    public void ListarHabitaciones() {
-        conn.mostrarHabitaciones();
-    }
+    
     
     public void EditarHabitacion() {
         System.out.println("Ingrese el ID de la habitacion que desea editar:");
@@ -74,6 +72,8 @@ public class AdminHabitaciones {
 
         this.conn.EditarHabitacion(idHabitacion, cantidadPersonas, camaDoble, camaSimple, precioNoche);
     }
+    
+    
     
     public void EliminarHabitacion() {
         System.out.println("Ingrese el ID de la habitacion que desea eliminar:");

@@ -1,38 +1,26 @@
 package devlab.hotel;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Image;
 import java.util.List;
 import java.util.Map;
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 
 /**
  *
  * @author Equipo
  */
-public class VerHabitacionesFrame extends javax.swing.JFrame {
+public class VerReservas extends javax.swing.JFrame {
     
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(VerHabitacionesFrame.class.getName());
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(VerReservas.class.getName());
     DBConnection conn = new DBConnection();
     /**
-     * Creates new form VerHabitacionesFrame
+     * Creates new form VerReservas
      */
-    public VerHabitacionesFrame() {
+    public VerReservas() {
         initComponents();
-
-        Cards.setLayout(new BoxLayout(Cards, BoxLayout.Y_AXIS));
+        Cards.setLayout(new javax.swing.BoxLayout(Cards, javax.swing.BoxLayout.Y_AXIS)); 
         containerCards();
-        
     }
-
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -50,7 +38,6 @@ public class VerHabitacionesFrame extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(600, 300));
 
         jPanel1.setBackground(new java.awt.Color(160, 175, 185));
 
@@ -80,6 +67,7 @@ public class VerHabitacionesFrame extends javax.swing.JFrame {
         );
 
         Cards.setBackground(new java.awt.Color(217, 217, 217));
+        Cards.setForeground(new java.awt.Color(255, 255, 255));
         Cards.setPreferredSize(new java.awt.Dimension(437, 255));
 
         javax.swing.GroupLayout CardsLayout = new javax.swing.GroupLayout(Cards);
@@ -96,7 +84,7 @@ public class VerHabitacionesFrame extends javax.swing.JFrame {
         jScrollPane1.setViewportView(Cards);
 
         jLabel1.setFont(new java.awt.Font("Segoe UI Symbol", 0, 18)); // NOI18N
-        jLabel1.setText("Habitaciondes del Hotel");
+        jLabel1.setText("Reservas del Hotel");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -111,7 +99,7 @@ public class VerHabitacionesFrame extends javax.swing.JFrame {
                         .addContainerGap()
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 573, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(197, 197, 197)
+                        .addGap(218, 218, 218)
                         .addComponent(jLabel1)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -119,9 +107,9 @@ public class VerHabitacionesFrame extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 191, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(54, 54, 54))
         );
@@ -129,7 +117,6 @@ public class VerHabitacionesFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    
     private void containerCards() {
         List<Map<String, Object>> disponibles = conn.mostrarReservas();
         
@@ -149,48 +136,30 @@ public class VerHabitacionesFrame extends javax.swing.JFrame {
         
     }
     private javax.swing.JPanel crearCardHabitacion(Map<String, Object> hab) {
-    javax.swing.JPanel card = new javax.swing.JPanel(new java.awt.BorderLayout(10, 10));
-    card.setBorder(javax.swing.BorderFactory.createCompoundBorder(
-        javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5),
-        javax.swing.BorderFactory.createLineBorder(java.awt.Color.GRAY)
-    ));
-    card.setPreferredSize(new java.awt.Dimension(500, 180));
+        javax.swing.JPanel card = new javax.swing.JPanel(new java.awt.BorderLayout(10, 10));
+        card.setBorder(javax.swing.BorderFactory.createCompoundBorder(
+            javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5),
+            javax.swing.BorderFactory.createLineBorder(java.awt.Color.GRAY)
+        ));
+        card.setPreferredSize(new java.awt.Dimension(500, 130));
 
-    JPanel content = new JPanel(new BorderLayout());
-    content.setOpaque(false);
+        javax.swing.JPanel content = new javax.swing.JPanel();
+        content.setLayout(new javax.swing.BoxLayout(content, javax.swing.BoxLayout.Y_AXIS));
+        content.setOpaque(false);
 
-    int ID_res = (int) hab.get("id_reserva");
+        content.add(new JLabel("ID de reserva: " + hab.get("id_reserva")));
+        content.add(new JLabel("\n"));
+        content.add(new JLabel("ID de habitacion: $" + hab.get("id_habitacion")));
+        content.add(new JLabel("Fecha de inicio de reserva: " + hab.get("Fecha_inicio")));
+        content.add(new JLabel("Fecha de fin de reserva: " + hab.get("Fecha_fin")));
+        content.add(new JLabel("Cantidad de dias: " + hab.get("Cantidad_dias")));
+        content.add(new JLabel("Precio total de la reserva: " + hab.get("Precio_total")));
+        content.setOpaque(true);
+        content.setBackground(new Color(255,255,255));
+        card.add(content, java.awt.BorderLayout.CENTER);
 
-    JPanel infoPanel = new JPanel();
-    infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
-    infoPanel.setOpaque(false);
-    infoPanel.add(new JLabel("ID de la Reserva: " + ID_res));
-    infoPanel.add(new JLabel("ID de la habitacion: $" + hab.get("id_habitacion")));
-    infoPanel.add(new JLabel("Fecha de inicio: " + hab.get("Fecha_inicio")));
-    infoPanel.add(new JLabel("Fecha fin: " + hab.get("Fecha_fin")));
-    infoPanel.add(new JLabel("Cantidad de dias: " + hab.get("Cantidad_dias")));
-    infoPanel.add(new JLabel("Precio total: " + hab.get("Precio_total")));
-
-    content.add(infoPanel, BorderLayout.CENTER);
-
-    // Botón al pie
-    JButton reservarBtn = new JButton("Reservar");
-    reservarBtn.setFont(new java.awt.Font("Segoe UI", 0, 12));
-    reservarBtn.addActionListener(e -> conn.EliminarReserva(ID_res));
-
-    JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-    btnPanel.setOpaque(false);
-    btnPanel.add(reservarBtn);
-
-    content.add(btnPanel, BorderLayout.SOUTH);
-
-    // ESTA LÍNEA FALTABA 👇
-    card.add(content, BorderLayout.CENTER);
-
-    return card;
-}
-
-
+        return card;
+    }
     
     private void btnAtrasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAtrasActionPerformed
         this.dispose();
@@ -221,7 +190,7 @@ public class VerHabitacionesFrame extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new VerHabitacionesFrame().setVisible(true));
+        java.awt.EventQueue.invokeLater(() -> new VerReservas().setVisible(true));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
