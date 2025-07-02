@@ -57,6 +57,22 @@ public class DBConnection {
         return null; // no se encontró usuario
     }
 
+    public boolean buscarDNIUser(int dni, String contrasena) {
+        try {
+            String sql = "SELECT tipo FROM Login WHERE DNI = ? AND Contrasena = ?";
+            PreparedStatement stmt = this.conn.prepareStatement(sql);
+            stmt.setInt(1, dni);
+            stmt.setString(2, contrasena);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return true; 
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al autenticar usuario: " + e.getMessage());
+        }
+        return false; // no se encontró usuario
+    }
     
     public void insrtarUsuario(int DNI, String contrasena, String tipo) {
         try { 

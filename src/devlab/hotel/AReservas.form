@@ -96,6 +96,9 @@
               <Dimension value="[29, 30]"/>
             </Property>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnAtrasActionPerformed"/>
+          </Events>
         </Component>
       </SubComponents>
     </Container>

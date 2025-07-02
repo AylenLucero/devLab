@@ -27,11 +27,11 @@ public class AReservas extends javax.swing.JFrame {
     public AReservas() {
     this.conn = new DBConnection();
     this.cliente = new Clientes(conn, new java.util.Scanner(System.in)); 
-    initComponents(); // ✅ PRIMERO CREÁS LOS COMPONENTES
+    initComponents(); 
 
-    Cards.setLayout(new BoxLayout(Cards, BoxLayout.Y_AXIS)); // ✅ Ahora sí existe
+    Cards.setLayout(new BoxLayout(Cards, BoxLayout.Y_AXIS));
     Cards.setAutoscrolls(true); 
-    jScrollPane1.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS); // Opcional
+    jScrollPane1.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS); 
     configurarEventos();
 }
 
@@ -69,6 +69,11 @@ public class AReservas extends javax.swing.JFrame {
         btnAtras.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnAtras.setLabel("Atras");
         btnAtras.setPreferredSize(new java.awt.Dimension(29, 30));
+        btnAtras.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAtrasActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -306,9 +311,9 @@ public class AReservas extends javax.swing.JFrame {
 
     
     private void reservarHabitacion(int idHabitacion, float precioTotal) {
-        int DNI = cliente.SolicitarDatosCliente(); // Método ya existente
-        conn.InsertarReserva(idHabitacion, fechaInicio.toString(), fechaFin.toString(), (int) cantidadDias, precioTotal, DNI);
-        javax.swing.JOptionPane.showMessageDialog(this, "Reserva realizada con éxito.");
+
+        DatosCliente datosCliente = new DatosCliente(conn, idHabitacion, fechaInicio, fechaFin, cantidadDias, precioTotal);
+        datosCliente.setVisible(true);
     }
 
 
@@ -328,6 +333,13 @@ public class AReservas extends javax.swing.JFrame {
     private void btnBuscarHabitacionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarHabitacionActionPerformed
         buscarHabitaciones(); 
     }//GEN-LAST:event_btnBuscarHabitacionActionPerformed
+
+    private void btnAtrasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAtrasActionPerformed
+        this.dispose();
+        
+        AdministradorFrame AdminFrame = new AdministradorFrame();
+        AdminFrame.setVisible(true);
+    }//GEN-LAST:event_btnAtrasActionPerformed
 
     /**
      * @param args the command line arguments
