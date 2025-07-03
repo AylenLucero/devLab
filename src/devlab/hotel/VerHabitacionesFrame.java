@@ -184,7 +184,7 @@ public class VerHabitacionesFrame extends javax.swing.JFrame {
         card.add(content, BorderLayout.CENTER);
 
         return card;
-}
+    }
 
 
     

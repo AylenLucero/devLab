@@ -402,18 +402,20 @@ public class DBConnection {
         }
     }
     
-        public void ActualizarTipoAAdministrador(int dni) {
-         try {
-             String sql = "UPDATE Login SET Tipo = 'administrador' WHERE dni = ?";
-             PreparedStatement stmt = this.conn.prepareStatement(sql);
-             stmt.setInt(1, dni);
+    public void actualizarTipoAAdministrador(int dni) {
+        try {
+            String sql = "UPDATE Login SET Tipo = 'administrador' WHERE dni = ?";
+            PreparedStatement stmt = this.conn.prepareStatement(sql);
+            stmt.setInt(1, dni);
 
-             int filas = stmt.executeUpdate();
-             System.out.println(filas > 0 ? "El cliente ahora es administrador." : "No se pudo actualizar el rol.");
-         } catch (SQLException e) {
-             System.out.println("Error al actualizar rol: " + e.getMessage());
-         }
-     }
+            int filas = stmt.executeUpdate();
+            if(filas > 0 ) JOptionPane.showMessageDialog(null, "El cliente ahora es administrador.");
+            else JOptionPane.showMessageDialog(null, "No se pudo actualizar el rol.");
+        } catch (SQLException e) {
+            System.out.println("Error al actualizar rol: " + e.getMessage());
+        }
+    }
+    
    public String ObtenerTipoUsuario(int dni) {
         try {
             String sql = "SELECT Tipo FROM Login WHERE dni = ?";
@@ -442,17 +444,58 @@ public class DBConnection {
         }
     }
     
-    public void EliminarUsuario(int dni) {
+   public void eliminarUsuario(int dni) {
         try {
-            String sql = "DELETE FROM Login WHERE dni = ?";
+            // Contar cuántos administradores hay
+            String countSql = "SELECT COUNT(*) FROM Login WHERE tipo = 'administrador'";
+            PreparedStatement countStmt = this.conn.prepareStatement(countSql);
+            ResultSet rs = countStmt.executeQuery();
+
+            int cantidadAdmins = 0;
+            if (rs.next()) {
+                cantidadAdmins = rs.getInt(1);
+            }
+
+            // Si hay solo 1 admin, no permitir borrar
+            if (cantidadAdmins <= 1) {
+                JOptionPane.showMessageDialog(null, "No se puede eliminar al último administrador.");
+                return;
+            }
+
+            //  Eliminar el usuario
+            String sql = "DELETE FROM Login WHERE DNI = ?";
             PreparedStatement stmt = this.conn.prepareStatement(sql);
             stmt.setInt(1, dni);
-
             int filas = stmt.executeUpdate();
-            System.out.println(filas > 0 ? "Administrador eliminado." : "No se pudo eliminar el usuario.");
+
+            if (filas > 0)
+                JOptionPane.showMessageDialog(null, "Administrador eliminado.");
+            else
+                JOptionPane.showMessageDialog(null, "No se pudo eliminar el usuario.");
+
         } catch (SQLException e) {
             System.out.println("Error al eliminar usuario: " + e.getMessage());
         }
+    }
+   
+     public List<Map<String, Object>> obtenerAdministradores() {
+        List<Map<String, Object>> admins = new ArrayList<>();
+        String sql = "SELECT id_usuario, tipo, dni FROM Login WHERE tipo = 'admin'";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                Map<String, Object> admin = new HashMap<>();
+                admin.put("id_usuario", rs.getInt("id_usuario"));
+                admin.put("tipo", rs.getString("tipo"));
+                admin.put("dni", rs.getInt("dni"));
+                admins.add(admin);
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al obtener administradores: " + e.getMessage());
+        }
+
+        return admins;
     }
    
     // --- CLIENTE
