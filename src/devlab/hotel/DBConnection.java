@@ -149,29 +149,7 @@ public class DBConnection {
         }
     }
     
-    public List<Habitacion> obtenerHabitaciones() {
-        List<Habitacion> habitaciones = new ArrayList<>();
-        try {
-            String sql = "SELECT ID_habitacion, Cantidad_personas, C_doble, C_simple, Disponibilidad, Precio_noche FROM dbo.Habitaciones";
-            PreparedStatement stmt = this.conn.prepareStatement(sql);
-            ResultSet rs = stmt.executeQuery();
-
-            while (rs.next()) {
-                int id = rs.getInt("ID_habitacion");
-                int personas = rs.getInt("Cantidad_personas");
-                int dobles = rs.getInt("C_doble");
-                int simples = rs.getInt("C_simple");
-                String disponibilidad = rs.getString("Disponibilidad");
-                float precio = rs.getFloat("Precio_noche");
-
-                Habitacion habitacion = new Habitacion(id, personas, dobles, simples, disponibilidad, precio);
-                habitaciones.add(habitacion);
-            }
-        } catch (SQLException e) {
-            System.out.println("Error al obtener habitaciones: " + e.getMessage());
-        }
-        return habitaciones;
-    }
+   
     
     public void EliminarHabitacion(int idHabitacion) {
         try {
@@ -254,7 +232,7 @@ public class DBConnection {
     public List<Map<String, Object>> ObtenerReservasPorDNI(int dniCliente) {
         List<Map<String, Object>> reservas = new ArrayList<>();
         try {
-            String sql = "SELECT Id_reserva, Id_habitacion, Fecha_inicio, Fecha_fin FROM dbo.Reservas WHERE DNI_cliente = ?";
+            String sql = "SELECT Id_reserva, Id_habitacion, Fecha_inicio, Fecha_fin, Cantidad_dias, Precio_total, DNI_cliente FROM dbo.Reservas WHERE DNI_cliente = ?";
             PreparedStatement stmt = this.conn.prepareStatement(sql);
             stmt.setInt(1, dniCliente);
             ResultSet rs = stmt.executeQuery();
@@ -265,6 +243,9 @@ public class DBConnection {
                 fila.put("id_habitacion", rs.getInt("Id_habitacion"));
                 fila.put("fecha_inicio", rs.getString("Fecha_inicio"));
                 fila.put("fecha_fin", rs.getString("Fecha_fin"));
+                fila.put("Cantidad_dias", rs.getString("Cantidad_dias"));
+                fila.put("Precio_total", rs.getString("Precio_total"));
+                fila.put("DNI_cliente", rs.getString("DNI_cliente"));
                 reservas.add(fila);
             }
         } catch (SQLException e) {

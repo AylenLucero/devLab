@@ -149,11 +149,11 @@ public class VerReservas extends javax.swing.JFrame {
 
         content.add(new JLabel("ID de reserva: " + hab.get("id_reserva")));
         content.add(new JLabel("\n"));
-        content.add(new JLabel("ID de habitacion: $" + hab.get("id_habitacion")));
+        content.add(new JLabel("ID de habitacion: " + hab.get("id_habitacion")));
         content.add(new JLabel("Fecha de inicio de reserva: " + hab.get("Fecha_inicio")));
         content.add(new JLabel("Fecha de fin de reserva: " + hab.get("Fecha_fin")));
         content.add(new JLabel("Cantidad de dias: " + hab.get("Cantidad_dias")));
-        content.add(new JLabel("Precio total de la reserva: " + hab.get("Precio_total")));
+        content.add(new JLabel("Precio total de la reserva: $" + hab.get("Precio_total")));
         content.setOpaque(true);
         content.setBackground(new Color(255,255,255));
         card.add(content, java.awt.BorderLayout.CENTER);

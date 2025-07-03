@@ -190,10 +190,10 @@ public class AdministradorFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnVerHabitacionesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVerHabitacionesActionPerformed
-        this.dispose();
-
         VerHabitacionesFrame verHabitaciones = new VerHabitacionesFrame();
         verHabitaciones.setVisible(true);
+        this.dispose();
+
     }//GEN-LAST:event_btnVerHabitacionesActionPerformed
 
     private void btnAReservasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAReservasActionPerformed

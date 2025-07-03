@@ -10,7 +10,6 @@ import javax.swing.BoxLayout;
  */
 public class AReservas extends javax.swing.JFrame {
     private DBConnection conn;
-    private Clientes cliente;
     private java.time.LocalDate fechaInicio;
     private java.time.LocalDate fechaFin;
     private long cantidadDias;
@@ -22,7 +21,6 @@ public class AReservas extends javax.swing.JFrame {
      */
     public AReservas() {
     this.conn = new DBConnection();
-    this.cliente = new Clientes(conn, new java.util.Scanner(System.in)); 
     initComponents(); 
 
     Cards.setLayout(new BoxLayout(Cards, BoxLayout.Y_AXIS));
