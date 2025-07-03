@@ -23,9 +23,13 @@ public class EliminarReservasFrame extends javax.swing.JFrame implements ICardGe
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(EliminarReservasFrame.class.getName());
     private DBConnection conn;
+    private String tipo;
+    private Boolean edicion;
 
-    public EliminarReservasFrame(DBConnection conn) {
+    public EliminarReservasFrame(DBConnection conn, String tipo, Boolean edicion) {
         this.conn = conn;
+        this.tipo = tipo;
+        this.edicion = edicion;
         initComponents();
         Cards.setLayout(new javax.swing.BoxLayout(Cards, javax.swing.BoxLayout.Y_AXIS));
     }
@@ -47,7 +51,6 @@ public class EliminarReservasFrame extends javax.swing.JFrame implements ICardGe
         btnBuscarReservas = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(600, 300));
 
         jPanel1.setBackground(new java.awt.Color(160, 175, 185));
 
@@ -69,7 +72,7 @@ public class EliminarReservasFrame extends javax.swing.JFrame implements ICardGe
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(btnAtras, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 520, Short.MAX_VALUE))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -113,21 +116,17 @@ public class EliminarReservasFrame extends javax.swing.JFrame implements ICardGe
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
-            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 311, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnBuscarReservas, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 311, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnBuscarReservas, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 580, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 580, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(14, Short.MAX_VALUE)))
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -139,22 +138,23 @@ public class EliminarReservasFrame extends javax.swing.JFrame implements ICardGe
                         .addComponent(btnBuscarReservas, javax.swing.GroupLayout.DEFAULT_SIZE, 26, Short.MAX_VALUE)
                         .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jLabel1))
-                .addGap(0, 238, Short.MAX_VALUE))
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addGap(70, 70, 70)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(44, Short.MAX_VALUE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 226, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnAtrasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAtrasActionPerformed
+        if("admin".equals(tipo)) {
+            AdministradorFrame AdminFrame = new AdministradorFrame();
+            AdminFrame.setVisible(true);
+        } else {
+            ClienteFrame clFrame = new ClienteFrame();
+            clFrame.setVisible(true);
+        }
         this.dispose();
-
-        AdministradorFrame AdminFrame = new AdministradorFrame();
-        AdminFrame.setVisible(true);
     }//GEN-LAST:event_btnAtrasActionPerformed
 
     private void btnBuscarReservasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarReservasActionPerformed
@@ -173,8 +173,8 @@ public class EliminarReservasFrame extends javax.swing.JFrame implements ICardGe
             return;
         }
 
-        List<Map<String, Object>> disponibles = conn.ObtenerReservasPorDNI(dni);
-        containerCards(disponibles, Cards, true, "Eliminar reserva");
+        List<Map<String, Object>> disponibles = conn.obtenerReservasPorDNI(dni);
+        containerCards(disponibles, Cards, true, edicion == true ? "Editar" : "Eliminar");
     }
     
     @Override
@@ -186,6 +186,7 @@ public class EliminarReservasFrame extends javax.swing.JFrame implements ICardGe
 
         int ID = (int) datos.get("id_reserva");
         var fecha = datos.get("fecha_inicio");
+        int ID_habitacion = (int) datos.get("id_habitacion");
         
         content.add(new JLabel("Fecha de inicio: " + fecha));
         content.add(new JLabel("Fecha de fin: " + datos.get("fecha_fin")));
@@ -202,18 +203,31 @@ public class EliminarReservasFrame extends javax.swing.JFrame implements ICardGe
             if (conBoton) {
                 JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
                 buttonPanel.setOpaque(false);
-                JButton eliminarBtn = new JButton(textoBoton);
-                eliminarBtn.setFont(new java.awt.Font("Segoe UI", 0, 10));
-                eliminarBtn.addActionListener(e -> {
-                    if (!fechaInicio.isAfter(hoy)) {
-                        JOptionPane.showMessageDialog(this, "La reserva ya está en curso, no puede ser eliminada o cancelada");
-                    } else {
-                        conn.EliminarReserva(ID);
-                        JOptionPane.showMessageDialog(this, "Se Eliminó correctamente su reserva");
-                        containerCards();
-                    }
-                });
-                buttonPanel.add(eliminarBtn);
+                JButton eliminarEditarBtn = new JButton(textoBoton);
+                eliminarEditarBtn.setFont(new java.awt.Font("Segoe UI", 0, 10));
+                if("Eliminar".equals(textoBoton)) {
+                    eliminarEditarBtn.addActionListener(e -> {
+                        if (!fechaInicio.isAfter(hoy)) {
+                            JOptionPane.showMessageDialog(this, "La reserva ya está en curso, no puede ser eliminada o cancelada");
+                        } else {
+                            conn.EliminarReserva(ID);
+                            JOptionPane.showMessageDialog(this, "Se Eliminó correctamente su reserva");
+                            containerCards();
+                        }
+                    });
+                } else {
+                    eliminarEditarBtn.addActionListener(e -> {
+                        if (!fechaInicio.isAfter(hoy)) {
+                            JOptionPane.showMessageDialog(this, "La reserva ya está en curso, no puede ser editar");
+                        } else {
+                            EditarReservaFrame editarReserva = new EditarReservaFrame(tipo,ID,ID_habitacion);
+                            editarReserva.setVisible(true);
+                            containerCards();
+                        }
+                    });
+                }
+                
+                buttonPanel.add(eliminarEditarBtn);
                 content.add(buttonPanel); 
             }
             
@@ -245,8 +259,6 @@ public class EliminarReservasFrame extends javax.swing.JFrame implements ICardGe
         }
         //</editor-fold>
 
-        /* Create and display the form */
-        new EliminarReservasFrame(new DBConnection()).setVisible(true);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -9,7 +9,7 @@ package devlab.hotel;
  * @author Rodrigo
  */
 public class ClienteFrame extends javax.swing.JFrame {
-    
+    DBConnection conn = new DBConnection();
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(ClienteFrame.class.getName());
 
     /**
@@ -29,30 +29,53 @@ public class ClienteFrame extends javax.swing.JFrame {
     private void initComponents() {
 
         btnEditarReservas = new javax.swing.JButton();
-        btnVerReservas = new javax.swing.JButton();
-        vtnCargarReservas = new javax.swing.JButton();
-        btnBorrarReservas = new javax.swing.JButton();
+        btnAReserva = new javax.swing.JButton();
+        btnBorrarReserva = new javax.swing.JButton();
         labelB = new javax.swing.JLabel();
+        jPanel1 = new javax.swing.JPanel();
         btnCerrarSesion = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
+        btnEditarReservas.setBackground(new java.awt.Color(160, 175, 185));
+        btnEditarReservas.setForeground(new java.awt.Color(255, 255, 255));
         btnEditarReservas.setText("Editar Reservas");
         btnEditarReservas.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnEditarReservas.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditarReservasActionPerformed(evt);
+            }
+        });
 
-        btnVerReservas.setText("Ver Reservas");
-        btnVerReservas.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnAReserva.setBackground(new java.awt.Color(160, 175, 185));
+        btnAReserva.setForeground(new java.awt.Color(255, 255, 255));
+        btnAReserva.setText("Cargar Reservas");
+        btnAReserva.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnAReserva.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAReservaActionPerformed(evt);
+            }
+        });
 
-        vtnCargarReservas.setText("Cargar Reservas");
-        vtnCargarReservas.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-
-        btnBorrarReservas.setText("Borrar Reservas");
-        btnBorrarReservas.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnBorrarReserva.setBackground(new java.awt.Color(160, 175, 185));
+        btnBorrarReserva.setForeground(new java.awt.Color(255, 255, 255));
+        btnBorrarReserva.setText("Borrar Reservas");
+        btnBorrarReserva.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnBorrarReserva.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBorrarReservaActionPerformed(evt);
+            }
+        });
 
         labelB.setFont(new java.awt.Font("Segoe UI Semibold", 1, 24)); // NOI18N
         labelB.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         labelB.setText("Bienvenido");
 
+        jPanel1.setBackground(new java.awt.Color(160, 175, 185));
+        jPanel1.setPreferredSize(new java.awt.Dimension(600, 30));
+
+        btnCerrarSesion.setBackground(new java.awt.Color(160, 175, 185));
+        btnCerrarSesion.setForeground(new java.awt.Color(255, 255, 255));
         btnCerrarSesion.setText("Cerrar Sesión");
         btnCerrarSesion.setToolTipText("");
         btnCerrarSesion.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -62,56 +85,77 @@ public class ClienteFrame extends javax.swing.JFrame {
             }
         });
 
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addComponent(btnCerrarSesion)
+                .addGap(0, 501, Short.MAX_VALUE))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addComponent(btnCerrarSesion, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addGroup(layout.createSequentialGroup()
+                .addGap(166, 166, 166)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(134, 134, 134)
-                        .addComponent(labelB, javax.swing.GroupLayout.PREFERRED_SIZE, 254, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(91, 91, 91)
+                        .addGap(56, 56, 56)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(btnVerReservas, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnEditarReservas, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(60, 60, 60)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(vtnCargarReservas, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnBorrarReservas, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(196, 196, 196)
-                        .addComponent(btnCerrarSesion, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(109, Short.MAX_VALUE))
+                            .addComponent(btnBorrarReserva, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnEditarReservas, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnAReserva, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(labelB, javax.swing.GroupLayout.PREFERRED_SIZE, 254, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(24, 24, 24)
-                .addComponent(labelB, javax.swing.GroupLayout.DEFAULT_SIZE, 50, Short.MAX_VALUE)
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(vtnCargarReservas)
-                    .addComponent(btnVerReservas))
-                .addGap(23, 23, 23)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnEditarReservas)
-                    .addComponent(btnBorrarReservas))
-                .addGap(18, 18, 18)
-                .addComponent(btnCerrarSesion)
-                .addContainerGap(98, Short.MAX_VALUE))
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(38, 38, 38)
+                .addComponent(labelB, javax.swing.GroupLayout.DEFAULT_SIZE, 44, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnAReserva, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btnEditarReservas, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btnBorrarReserva, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(67, 67, 67))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnCerrarSesionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCerrarSesionActionPerformed
-        this.dispose();
-
         LoginFrame loginFrame = new LoginFrame();
         loginFrame.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_btnCerrarSesionActionPerformed
+
+    private void btnBorrarReservaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBorrarReservaActionPerformed
+        EliminarReservasFrame eliminarRes = new EliminarReservasFrame(conn,"cliente",false);
+        eliminarRes.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_btnBorrarReservaActionPerformed
+
+    private void btnAReservaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAReservaActionPerformed
+        AReservas aReservas = new AReservas("cliente");
+        aReservas.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_btnAReservaActionPerformed
+
+    private void btnEditarReservasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarReservasActionPerformed
+        new EliminarReservasFrame(conn, "cliente", true).setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_btnEditarReservasActionPerformed
 
     /**
      * @param args the command line arguments
@@ -139,11 +183,11 @@ public class ClienteFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnBorrarReservas;
+    private javax.swing.JButton btnAReserva;
+    private javax.swing.JButton btnBorrarReserva;
     private javax.swing.JButton btnCerrarSesion;
     private javax.swing.JButton btnEditarReservas;
-    private javax.swing.JButton btnVerReservas;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel labelB;
-    private javax.swing.JButton vtnCargarReservas;
     // End of variables declaration//GEN-END:variables
 }

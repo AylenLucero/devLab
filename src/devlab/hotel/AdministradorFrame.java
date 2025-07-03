@@ -33,7 +33,7 @@ public class AdministradorFrame extends javax.swing.JFrame {
         btnVerHabitaciones = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
-        jButton5 = new javax.swing.JButton();
+        btnEditarRes = new javax.swing.JButton();
         btnVerReservas = new javax.swing.JButton();
         btnAReservas = new javax.swing.JButton();
         btnBorrarReservas = new javax.swing.JButton();
@@ -53,6 +53,8 @@ public class AdministradorFrame extends javax.swing.JFrame {
         jLabel1.setText("Administrador");
         jLabel1.setPreferredSize(new java.awt.Dimension(560, 32));
 
+        jButton1.setBackground(new java.awt.Color(160, 175, 185));
+        jButton1.setForeground(new java.awt.Color(255, 255, 255));
         jButton1.setText("Editar Habitaciones");
         jButton1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -61,6 +63,8 @@ public class AdministradorFrame extends javax.swing.JFrame {
             }
         });
 
+        btnVerHabitaciones.setBackground(new java.awt.Color(160, 175, 185));
+        btnVerHabitaciones.setForeground(new java.awt.Color(255, 255, 255));
         btnVerHabitaciones.setText("Ver Habitaciones");
         btnVerHabitaciones.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnVerHabitaciones.addActionListener(new java.awt.event.ActionListener() {
@@ -69,6 +73,8 @@ public class AdministradorFrame extends javax.swing.JFrame {
             }
         });
 
+        jButton3.setBackground(new java.awt.Color(160, 175, 185));
+        jButton3.setForeground(new java.awt.Color(255, 255, 255));
         jButton3.setText("Cargar Habitaciones");
         jButton3.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jButton3.addActionListener(new java.awt.event.ActionListener() {
@@ -77,6 +83,8 @@ public class AdministradorFrame extends javax.swing.JFrame {
             }
         });
 
+        jButton4.setBackground(new java.awt.Color(160, 175, 185));
+        jButton4.setForeground(new java.awt.Color(255, 255, 255));
         jButton4.setText("Borrar Habitaciones");
         jButton4.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jButton4.addActionListener(new java.awt.event.ActionListener() {
@@ -85,9 +93,18 @@ public class AdministradorFrame extends javax.swing.JFrame {
             }
         });
 
-        jButton5.setText("Editar Reservas");
-        jButton5.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnEditarRes.setBackground(new java.awt.Color(160, 175, 185));
+        btnEditarRes.setForeground(new java.awt.Color(255, 255, 255));
+        btnEditarRes.setText("Editar Reservas");
+        btnEditarRes.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnEditarRes.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditarResActionPerformed(evt);
+            }
+        });
 
+        btnVerReservas.setBackground(new java.awt.Color(160, 175, 185));
+        btnVerReservas.setForeground(new java.awt.Color(255, 255, 255));
         btnVerReservas.setText("Ver Reservas");
         btnVerReservas.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnVerReservas.addActionListener(new java.awt.event.ActionListener() {
@@ -96,6 +113,8 @@ public class AdministradorFrame extends javax.swing.JFrame {
             }
         });
 
+        btnAReservas.setBackground(new java.awt.Color(160, 175, 185));
+        btnAReservas.setForeground(new java.awt.Color(255, 255, 255));
         btnAReservas.setText("Cargar Reservas");
         btnAReservas.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnAReservas.addActionListener(new java.awt.event.ActionListener() {
@@ -104,6 +123,8 @@ public class AdministradorFrame extends javax.swing.JFrame {
             }
         });
 
+        btnBorrarReservas.setBackground(new java.awt.Color(160, 175, 185));
+        btnBorrarReservas.setForeground(new java.awt.Color(255, 255, 255));
         btnBorrarReservas.setText("Borrar Reservas");
         btnBorrarReservas.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnBorrarReservas.addActionListener(new java.awt.event.ActionListener() {
@@ -216,7 +237,7 @@ public class AdministradorFrame extends javax.swing.JFrame {
                                     .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGap(42, 42, 42)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(btnEditarRes, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(btnVerReservas, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(btnAReservas, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(btnBorrarReservas, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -248,7 +269,7 @@ public class AdministradorFrame extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnAReservas)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton5)
+                        .addComponent(btnEditarRes)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnBorrarReservas)))
                 .addGap(56, 56, 56)
@@ -266,10 +287,10 @@ public class AdministradorFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_btnVerHabitacionesActionPerformed
 
     private void btnAReservasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAReservasActionPerformed
-        this.dispose();
-
-        AReservas aReservas = new AReservas();
+        
+        AReservas aReservas = new AReservas("admin");
         aReservas.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_btnAReservasActionPerformed
 
     private void btnAtrasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAtrasActionPerformed
@@ -304,10 +325,9 @@ public class AdministradorFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_btnVerReservasActionPerformed
 
     private void btnBorrarReservasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBorrarReservasActionPerformed
-        this.dispose();
-
-        EliminarReservasFrame eliminarRes = new EliminarReservasFrame(conn);
+        EliminarReservasFrame eliminarRes = new EliminarReservasFrame(conn, "admin", false);
         eliminarRes.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_btnBorrarReservasActionPerformed
 
     private void btnAddAdminActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddAdminActionPerformed
@@ -327,6 +347,11 @@ public class AdministradorFrame extends javax.swing.JFrame {
          new EliminarAdminFrame().setVisible(true);
         this.dispose();
     }//GEN-LAST:event_btnEliminarAdminActionPerformed
+
+    private void btnEditarResActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarResActionPerformed
+        new EliminarReservasFrame(conn, "admin", true).setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_btnEditarResActionPerformed
 
     /**
      * @param args the command line arguments
@@ -358,6 +383,7 @@ public class AdministradorFrame extends javax.swing.JFrame {
     private javax.swing.JButton btnAddAdmin;
     private javax.swing.JButton btnAtras;
     private javax.swing.JButton btnBorrarReservas;
+    private javax.swing.JButton btnEditarRes;
     private javax.swing.JButton btnEliminarAdmin;
     private javax.swing.JButton btnVerAdmins;
     private javax.swing.JButton btnVerHabitaciones;
@@ -365,7 +391,6 @@ public class AdministradorFrame extends javax.swing.JFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;

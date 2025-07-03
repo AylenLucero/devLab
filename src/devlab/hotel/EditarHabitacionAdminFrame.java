@@ -1,14 +1,11 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
+
 package devlab.hotel;
 
 import javax.swing.JOptionPane;
 
 /**
  *
- * @author Rodrigo
+ * @author Equipo
  */
 public class EditarHabitacionAdminFrame extends javax.swing.JFrame {
     
@@ -88,6 +85,8 @@ public class EditarHabitacionAdminFrame extends javax.swing.JFrame {
 
         jLabel6.setText("Precio por Noche");
 
+        jButton1.setBackground(new java.awt.Color(160, 175, 185));
+        jButton1.setForeground(new java.awt.Color(255, 255, 255));
         jButton1.setText("Editar Habitación");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -181,7 +180,7 @@ public class EditarHabitacionAdminFrame extends javax.swing.JFrame {
         int precioNoche = Integer.parseInt(this.precioPorNoche.getText());
 
         if (cantidadPersonas > 0 && camaDoble >= 0 && camaSimple >= 0 && precioNoche > 0) {
-            this.conn.EditarHabitacion(idHabitacion, cantidadPersonas, camaDoble, camaSimple, precioNoche);
+            this.conn.editarHabitacion(idHabitacion, cantidadPersonas, camaDoble, camaSimple, precioNoche);
             this.idHabitacion.setText("");
             this.cantidadPersonas.setText("");
             this.camaDoble.setText("");

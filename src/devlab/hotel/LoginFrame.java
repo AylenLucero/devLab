@@ -1,22 +1,22 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package devlab.hotel;
+
+import java.awt.Color;
+
 
 /**
  *
- * @author Rodrigo
+ * @author Equipo
  */
 public class LoginFrame extends javax.swing.JFrame {
-    
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(LoginFrame.class.getName());
-
+     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(LoginFrame.class.getName());
+      
     /**
      * Creates new form LoginFrame
      */
     public LoginFrame() {
         initComponents();
+        Color backgroundColor = new Color(160, 175, 185);
+        getContentPane().setBackground(backgroundColor);
     }
 
     /**
@@ -35,6 +35,7 @@ public class LoginFrame extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Hotel RA");
+        setBackground(new java.awt.Color(160, 175, 185));
 
         btnSalirSistema.setText("Salir");
         btnSalirSistema.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));

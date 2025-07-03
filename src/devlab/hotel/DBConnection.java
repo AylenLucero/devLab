@@ -72,7 +72,7 @@ public class DBConnection {
         } catch (SQLException e) {
             System.out.println("Error al autenticar usuario: " + e.getMessage());
         }
-        return false; // no se encontró usuario
+        return false; 
     }
     
     public void insrtarUsuario(int DNI, String contrasena, String tipo) {
@@ -120,7 +120,7 @@ public class DBConnection {
         }
     }
     
-    public void EditarHabitacion(int idHabitacion, int cantidadPersonas, int camaDoble, int camaSimple, float precioNoche) {
+    public void editarHabitacion(int idHabitacion, int cantidadPersonas, int camaDoble, int camaSimple, float precioNoche) {
         try {
             String sql = "UPDATE dbo.Habitaciones SET "
                        + "Cantidad_personas = ?, "
@@ -149,9 +149,7 @@ public class DBConnection {
         }
     }
     
-   
-    
-    public void EliminarHabitacion(int idHabitacion) {
+    public void eliminarHabitacion(int idHabitacion) {
         try {
             String sql = "DELETE FROM dbo.Habitaciones WHERE ID_habitacion = ?";
             PreparedStatement stmt = this.conn.prepareStatement(sql);
@@ -172,7 +170,7 @@ public class DBConnection {
 
     // -------------  ADMIN RESERVA
     
-    public void InsertarReserva(int idHabitacion, String fechaInicio, String fechaFin, int cantidadDias, float precioTotal, int DNI) {
+    public void insertarReserva(int idHabitacion, String fechaInicio, String fechaFin, int cantidadDias, float precioTotal, int DNI) {
         try {
             String sql = "INSERT INTO dbo.Reservas (id_habitacion, Fecha_inicio, Fecha_fin, Cantidad_dias, Precio_total, DNI_cliente) VALUES (?, ?, ?, ?, ?,?)";
             PreparedStatement stmt = this.conn.prepareStatement(sql);
@@ -214,22 +212,7 @@ public class DBConnection {
         return reservas;
     }
 
-    public boolean ExisteReservaPorDNI(int dniCliente) {
-        try {
-            String sql = "SELECT COUNT(*) FROM dbo.Reservas WHERE DNI_cliente = ?";
-            PreparedStatement stmt = this.conn.prepareStatement(sql);
-            stmt.setInt(1, dniCliente);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return rs.getInt(1) > 0;
-            }
-        } catch (SQLException e) {
-            System.out.println("Error al verificar existencia de reserva por DNI: " + e.getMessage());
-        }
-        return false;
-    }
-    
-    public List<Map<String, Object>> ObtenerReservasPorDNI(int dniCliente) {
+    public List<Map<String, Object>> obtenerReservasPorDNI(int dniCliente) {
         List<Map<String, Object>> reservas = new ArrayList<>();
         try {
             String sql = "SELECT Id_reserva, Id_habitacion, Fecha_inicio, Fecha_fin, Cantidad_dias, Precio_total, DNI_cliente FROM dbo.Reservas WHERE DNI_cliente = ?";
@@ -255,16 +238,15 @@ public class DBConnection {
     }
 
     
-    public void EditarReserva(int idReserva, int idHabitacion, String fechaInicio, String fechaFin, int cantidadDias, float precioTotal) {
+    public void EditarReserva(int idReserva, String fechaInicio, String fechaFin, int cantidadDias, float precioTotal) {
         try {
-            String sql = "UPDATE dbo.Reservas SET id_habitacion = ?, Fecha_inicio = ?, Fecha_fin = ?, Cantidad_dias = ?, Precio_total = ? WHERE id_reserva = ?";
+            String sql = "UPDATE dbo.Reservas SET Fecha_inicio = ?, Fecha_fin = ?, Cantidad_dias = ?, Precio_total = ? WHERE id_reserva = ?";
             PreparedStatement stmt = this.conn.prepareStatement(sql);
-            stmt.setInt(1, idHabitacion);
-            stmt.setString(2, fechaInicio);
-            stmt.setString(3, fechaFin);
-            stmt.setInt(4, cantidadDias);
-            stmt.setFloat(5, precioTotal);
-            stmt.setInt(6, idReserva);
+            stmt.setString(1, fechaInicio);
+            stmt.setString(2, fechaFin);
+            stmt.setInt(3, cantidadDias);
+            stmt.setFloat(4, precioTotal);
+            stmt.setInt(5, idReserva);
 
             int filas = stmt.executeUpdate();
             System.out.println(filas > 0 ? "Reserva actualizada correctamente." : "No se encontro la reserva con ese ID.");
@@ -480,15 +462,15 @@ public class DBConnection {
    
      public List<Map<String, Object>> obtenerAdministradores() {
         List<Map<String, Object>> admins = new ArrayList<>();
-        String sql = "SELECT id_usuario, tipo, dni FROM Login WHERE tipo = 'admin'";
+        String sql = "SELECT id_usuario, tipo, dni FROM Login WHERE tipo = 'administrador'";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
                 Map<String, Object> admin = new HashMap<>();
                 admin.put("id_usuario", rs.getInt("id_usuario"));
-                admin.put("tipo", rs.getString("tipo"));
-                admin.put("dni", rs.getInt("dni"));
+                admin.put("tipo", rs.getString("Tipo"));
+                admin.put("dni", rs.getInt("DNI"));
                 admins.add(admin);
             }
         } catch (SQLException e) {
@@ -497,7 +479,7 @@ public class DBConnection {
 
         return admins;
     }
-   
+    
     // --- CLIENTE
     
     

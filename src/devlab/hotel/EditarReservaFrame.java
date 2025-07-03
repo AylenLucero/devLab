@@ -7,27 +7,23 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import javax.swing.JOptionPane;
-
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
-
 /**
  *
- * @author Rodrigo
+ * @author Equipo
  */
 public class EditarReservaFrame extends javax.swing.JFrame {
-    
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(EditarReservaFrame.class.getName());
     private DBConnection conn;
+    private String tipo;
+    private int idReserva;
+    private int idHabitacion;
 
-    /**
-     * Creates new form EditarReservaFrame
-     */
-    public EditarReservaFrame() {
+    public EditarReservaFrame(String tipo, int idReserva, int idHabitacion) {
         initComponents();
-        this.conn = conn;
+        this.conn = new DBConnection();
+        this.tipo = tipo;
+        this.idReserva = idReserva;
+        this.idHabitacion = idHabitacion;
     }
 
     /**
@@ -41,16 +37,10 @@ public class EditarReservaFrame extends javax.swing.JFrame {
 
         jPanel1 = new javax.swing.JPanel();
         btnAtras = new javax.swing.JButton();
-        jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
+        btnEditarReserva = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
-        jLabel7 = new javax.swing.JLabel();
-        cantidadDias = new javax.swing.JTextField();
-        idHabitacion = new javax.swing.JTextField();
-        precioTotal = new javax.swing.JTextField();
         fechaInicio = new javax.swing.JTextField();
         fechaFin = new javax.swing.JTextField();
 
@@ -60,9 +50,9 @@ public class EditarReservaFrame extends javax.swing.JFrame {
 
         btnAtras.setBackground(new java.awt.Color(160, 175, 185));
         btnAtras.setForeground(new java.awt.Color(255, 255, 255));
-        btnAtras.setText("Cerrar Sesión");
         btnAtras.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(230, 225, 220)));
         btnAtras.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnAtras.setLabel("Atrás");
         btnAtras.setPreferredSize(new java.awt.Dimension(29, 30));
         btnAtras.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -83,26 +73,24 @@ public class EditarReservaFrame extends javax.swing.JFrame {
             .addComponent(btnAtras, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
-        jLabel2.setText("ID Habitacion");
-
+        jLabel3.setForeground(new java.awt.Color(160, 175, 185));
         jLabel3.setText("Fecha Inicio (YYYY-MM-DD)");
 
+        jLabel4.setForeground(new java.awt.Color(160, 175, 185));
         jLabel4.setText("Fecha Fin (YYYY-MM-DD)");
 
-        jLabel6.setText("Cantidad de Dias");
-
-        jButton1.setText("Editar Reserva");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        btnEditarReserva.setBackground(new java.awt.Color(160, 175, 185));
+        btnEditarReserva.setForeground(new java.awt.Color(255, 255, 255));
+        btnEditarReserva.setText("Editar Reserva");
+        btnEditarReserva.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                btnEditarReservaActionPerformed(evt);
             }
         });
 
         jLabel1.setFont(new java.awt.Font("Segoe UI Semibold", 1, 24)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Editar Reserva");
-
-        jLabel7.setText("Precio Total");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -112,115 +100,117 @@ public class EditarReservaFrame extends javax.swing.JFrame {
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGap(169, 169, 169)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(175, 175, 175)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 299, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(101, 101, 101)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(fechaInicio)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(idHabitacion, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jLabel3))
                         .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addComponent(cantidadDias, javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addComponent(fechaFin, javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.LEADING)))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(3, 3, 3)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(precioTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE))))))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(fechaFin, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.LEADING)))
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 299, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnEditarReserva, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(256, 256, 256))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 36, Short.MAX_VALUE)
-                .addGap(38, 38, 38)
+                .addGap(28, 28, 28)
+                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 35, Short.MAX_VALUE)
+                .addGap(28, 28, 28)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel6)
-                        .addGap(12, 12, 12)
-                        .addComponent(cantidadDias, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jLabel4)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(fechaFin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton1)))
+                        .addComponent(fechaFin, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel2)
-                        .addGap(12, 12, 12)
-                        .addComponent(idHabitacion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jLabel3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(fechaInicio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel7)
-                        .addGap(12, 12, 12)
-                        .addComponent(precioTotal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(62, 62, 62)))
-                .addGap(72, 72, 72))
+                        .addComponent(fechaInicio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(28, 28, 28)
+                .addComponent(btnEditarReserva)
+                .addGap(85, 85, 85))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnAtrasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAtrasActionPerformed
-        // TODO add your handling code here:
-        new AdministradorFrame().setVisible(true);
+        if("admin".equals(tipo)) {
+            new AdministradorFrame().setVisible(true);
+        } else {
+            new ClienteFrame().setVisible(true);
+        }
         this.dispose();
     }//GEN-LAST:event_btnAtrasActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-        int idhabitacion = Integer.parseInt(this.idHabitacion.getText());
-        LocalDate fechainicio = LocalDate.parse(this.fechaInicio.getText());
-        LocalDate fechafin = LocalDate.parse(this.fechaFin.getText());
-        int cantidadDias = Integer.parseInt(this.cantidadDias.getText());
-        
-       
+    private void btnEditarReservaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarReservaActionPerformed
         try {
-            long dias = ChronoUnit.DAYS.between(fechainicio, fechafin);
-            if (dias <= 0) {
-                JOptionPane.showMessageDialog(null, "La fecha de fin debe ser posterior a la de inicio.");
-            }
-
-            float precioNoche = conn.ObtenerPrecioHabitacion(idhabitacion);
-            if (precioNoche == -1f) {
-                System.out.println("No se encontro una Habitacion con ese ID.");
+            String strFechaInicio = this.fechaInicio.getText();
+            String strFechaFin = this.fechaFin.getText();
+            int cantidadDias = calcularDias(strFechaInicio, strFechaFin);
+            float precioHab = conn.ObtenerPrecioHabitacion(idHabitacion);
+            float precioTotal = precioHab * cantidadDias;
+            
+            if (strFechaInicio.isEmpty() || strFechaFin.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios");
                 return;
             }
-
-            /*boolean ocupado = conn.ExisteSuperposicionReservaExcluyendo(idHabitacion, fechaInicio, fechaFin, idReserva);
+            
+            LocalDate nuevaFechaInicio = LocalDate.parse(strFechaInicio);
+            LocalDate nuevaFechaFin = LocalDate.parse(strFechaFin);
+            
+            if (nuevaFechaFin.isBefore(nuevaFechaInicio) || nuevaFechaFin.isEqual(nuevaFechaInicio)) {
+                JOptionPane.showMessageDialog(this, "La fecha de fin debe ser posterior a la de inicio");
+                return;
+            }
+            
+            boolean ocupado = conn.ExisteSuperposicionReservaExcluyendo(
+                idHabitacion, 
+                nuevaFechaInicio, 
+                nuevaFechaFin, 
+                idReserva
+            );
+            
             if (ocupado) {
-                System.out.println("La Habitacion ya esta reservada en ese rango de fechas.");
+                JOptionPane.showMessageDialog(this, "La habitación ya está reservada en esas fechas");
                 return;
-            }*/
-
-            float precioTotal = cantidadDias * precioNoche;
-
-            //conn.EditarReserva(idReserva, idHabitacion, fechaInicioStr, fechaFinStr, (int) cantidadDias, precioTotal);
-
+            }
+            
+            conn.EditarReserva(
+                idReserva,
+                strFechaInicio,
+                strFechaFin,
+                cantidadDias,
+                precioTotal
+            );
+            
+            JOptionPane.showMessageDialog(this, "Reserva actualizada exitosamente");
+            this.dispose(); 
+            
         } catch (DateTimeParseException e) {
-        JOptionPane.showMessageDialog(null, "ormato de fecha invalido. Use YYYY-MM-DD.");
-
+            JOptionPane.showMessageDialog(this, "Formato de fecha inválido. Use YYYY-MM-DD");
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Valores numéricos inválidos");
+        } catch (Exception e) {
+            logger.severe("Error al editar reserva: " + e.getMessage());
+            JOptionPane.showMessageDialog(this, "Error al actualizar la reserva");
         }
-        
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_btnEditarReservaActionPerformed
 
+    public int calcularDias(String fechaInicioStr, String fechaFinStr) {
+        long dias = ChronoUnit.DAYS.between(
+            LocalDate.parse(fechaInicioStr),
+            LocalDate.parse(fechaFinStr)
+        );
+        return (int) dias;
+    }
     /**
      * @param args the command line arguments
      */
@@ -243,23 +233,23 @@ public class EditarReservaFrame extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new EditarReservaFrame().setVisible(true));
+        java.awt.EventQueue.invokeLater(() -> {
+        new EditarReservaFrame(
+            "admin", 
+            1,     
+            101       
+        ).setVisible(true);
+    });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAtras;
-    private javax.swing.JTextField cantidadDias;
+    private javax.swing.JButton btnEditarReserva;
     private javax.swing.JTextField fechaFin;
     private javax.swing.JTextField fechaInicio;
-    private javax.swing.JTextField idHabitacion;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JTextField precioTotal;
     // End of variables declaration//GEN-END:variables
 }

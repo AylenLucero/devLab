@@ -20,20 +20,22 @@ public class AReservas extends javax.swing.JFrame implements ICardGenerator {
     private java.time.LocalDate fechaInicio;
     private java.time.LocalDate fechaFin;
     private long cantidadDias;
+    private String tipo;
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(AReservas.class.getName());
 
     /**
      * Creates new form AReservas
      */
-    public AReservas() {
-    this.conn = new DBConnection();
-    initComponents(); 
+    public AReservas(String tipo) {
+        this.tipo = tipo;
+        this.conn = new DBConnection();
+        initComponents(); 
 
-    Cards.setLayout(new BoxLayout(Cards, BoxLayout.Y_AXIS));
-    Cards.setAutoscrolls(true); 
-    jScrollPane1.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS); 
-    configurarEventos();
+        Cards.setLayout(new BoxLayout(Cards, BoxLayout.Y_AXIS));
+        Cards.setAutoscrolls(true); 
+        jScrollPane1.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS); 
+        configurarEventos();
     }
 
 
@@ -290,7 +292,7 @@ public class AReservas extends javax.swing.JFrame implements ICardGenerator {
 
     
     private void reservarHabitacion(int idHabitacion, float precioTotal) {
-        DatosCliente datosCliente = new DatosCliente(conn, idHabitacion, fechaInicio, fechaFin, cantidadDias, precioTotal);
+        DatosCliente datosCliente = new DatosCliente(tipo, conn, idHabitacion, fechaInicio, fechaFin, cantidadDias, precioTotal);
 
         JDialog dialog = new JDialog();
         dialog.setModal(true);
@@ -334,10 +336,15 @@ public class AReservas extends javax.swing.JFrame implements ICardGenerator {
     }//GEN-LAST:event_btnBuscarHabitacionActionPerformed
 
     private void btnAtrasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAtrasActionPerformed
-        this.dispose();
         
-        AdministradorFrame AdminFrame = new AdministradorFrame();
-        AdminFrame.setVisible(true);
+        if(tipo == "admin") {
+            AdministradorFrame AdminFrame = new AdministradorFrame();
+            AdminFrame.setVisible(true);
+        } else {
+            ClienteFrame clFrame = new ClienteFrame();
+            clFrame.setVisible(true);
+        }
+        this.dispose();
     }//GEN-LAST:event_btnAtrasActionPerformed
 
     /**
@@ -363,7 +370,6 @@ public class AReservas extends javax.swing.JFrame implements ICardGenerator {
 
         java.awt.EventQueue.invokeLater(() -> {
             DBConnection conn = new DBConnection();
-            new AReservas().setVisible(true);
         });
     }
 

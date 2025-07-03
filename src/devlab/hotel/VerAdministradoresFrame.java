@@ -1,29 +1,27 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package devlab.hotel;
 
 
+import java.awt.BorderLayout;
+import java.util.List;
+import java.util.Map;
+import javax.swing.DefaultListModel;
 import javax.swing.JPanel;
 
 
 /**
  *
- * @author Rodrigo
+ * @author Equipo
  */
 public class VerAdministradoresFrame extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(VerAdministradoresFrame.class.getName());
     DBConnection conn = new DBConnection();
-    private JPanel contenedor;
-    /**
-     * Creates new form VerAdministradoresFrame
-     */
-   
- 
-   
 
+    public VerAdministradoresFrame() {
+        initComponents();
+        configurarLista();
+        cargarAdministradores();
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -37,7 +35,7 @@ public class VerAdministradoresFrame extends javax.swing.JFrame {
         btnAtras = new javax.swing.JButton();
         Cards = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        Cards1 = new javax.swing.JPanel();
+        jList1 = new javax.swing.JList<>();
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -69,21 +67,12 @@ public class VerAdministradoresFrame extends javax.swing.JFrame {
             .addComponent(btnAtras, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
-        Cards1.setBackground(new java.awt.Color(217, 217, 217));
-        Cards1.setPreferredSize(new java.awt.Dimension(437, 255));
-
-        javax.swing.GroupLayout Cards1Layout = new javax.swing.GroupLayout(Cards1);
-        Cards1.setLayout(Cards1Layout);
-        Cards1Layout.setHorizontalGroup(
-            Cards1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 561, Short.MAX_VALUE)
-        );
-        Cards1Layout.setVerticalGroup(
-            Cards1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 255, Short.MAX_VALUE)
-        );
-
-        jScrollPane1.setViewportView(Cards1);
+        jList1.setModel(new javax.swing.AbstractListModel<String>() {
+            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            public int getSize() { return strings.length; }
+            public String getElementAt(int i) { return strings[i]; }
+        });
+        jScrollPane1.setViewportView(jList1);
 
         jLabel1.setFont(new java.awt.Font("Segoe UI Symbol", 0, 18)); // NOI18N
         jLabel1.setText("Listado de Administradores");
@@ -93,12 +82,13 @@ public class VerAdministradoresFrame extends javax.swing.JFrame {
         CardsLayout.setHorizontalGroup(
             CardsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(CardsLayout.createSequentialGroup()
-                .addGap(37, 37, 37)
                 .addGroup(CardsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 573, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(CardsLayout.createSequentialGroup()
-                        .addGap(191, 191, 191)
-                        .addComponent(jLabel1)))
+                        .addGap(228, 228, 228)
+                        .addComponent(jLabel1))
+                    .addGroup(CardsLayout.createSequentialGroup()
+                        .addGap(33, 33, 33)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 577, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         CardsLayout.setVerticalGroup(
@@ -131,6 +121,39 @@ public class VerAdministradoresFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void configurarLista() {
+        // Configuración básica de la lista
+        jList1.setFont(new java.awt.Font("Segoe UI", java.awt.Font.PLAIN, 13));
+        jList1.setSelectionBackground(new java.awt.Color(160, 175, 185));
+        jList1.setSelectionForeground(java.awt.Color.WHITE);
+    }
+
+    private void cargarAdministradores() {
+        try {
+            DefaultListModel<String> modelo = new DefaultListModel<>();
+            List<Map<String, Object>> administradores = conn.obtenerAdministradores();
+            
+            for (Map<String, Object> admin : administradores) {
+                String item = String.format("ID: %-5d | DNI: %-10d | Tipo: %s",
+                    admin.get("id_usuario"),
+                    admin.get("dni"),
+                    admin.get("tipo"));
+                modelo.addElement(item);
+            }
+            
+            jList1.setModel(modelo);
+            
+            if (administradores.isEmpty()) {
+                modelo.addElement("No hay administradores registrados");
+            }
+            
+        } catch (Exception e) {
+            logger.log(java.util.logging.Level.SEVERE, "Error al cargar administradores", e);
+            javax.swing.JOptionPane.showMessageDialog(this, "Error al cargar los administradores");
+        }
+    }
+
+    
     private void btnAtrasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAtrasActionPerformed
         // TODO add your handling code here:
         new AdministradorFrame().setVisible(true);
@@ -161,12 +184,12 @@ public class VerAdministradoresFrame extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> new VerAdministradoresFrame().setVisible(true));
     }
-
+ 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel Cards;
-    private javax.swing.JPanel Cards1;
     private javax.swing.JButton btnAtras;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JList<String> jList1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     // End of variables declaration//GEN-END:variables

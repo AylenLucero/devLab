@@ -15,18 +15,20 @@ public class DatosCliente extends javax.swing.JFrame {
     private LocalDate fechaFin;
     private long cantidadDias;
     private float precioTotal;
+    private String tipo;
 
 
     /**
      * Creates new form DatosCliente
      */
-    public DatosCliente(DBConnection conn, int idHabitacion, LocalDate fechaInicio, LocalDate fechaFin, long cantidadDias, float precioTotal) {
+    public DatosCliente(String tipo, DBConnection conn, int idHabitacion, LocalDate fechaInicio, LocalDate fechaFin, long cantidadDias, float precioTotal) {
         this.conn = conn;
         this.idHabitacion = idHabitacion;
         this.fechaInicio = fechaInicio;
         this.fechaFin = fechaFin;
         this.cantidadDias = cantidadDias;
         this.precioTotal = precioTotal;
+        this.tipo = tipo;
 
         initComponents(); 
     }
@@ -58,7 +60,6 @@ public class DatosCliente extends javax.swing.JFrame {
         btnGuardarDatos = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(600, 300));
 
         jPanel1.setBackground(new java.awt.Color(160, 175, 185));
 
@@ -183,8 +184,8 @@ public class DatosCliente extends javax.swing.JFrame {
                         .addComponent(jLabel1)
                         .addGap(182, 182, 182))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(btnGuardarDatos)
-                        .addGap(250, 250, 250))))
+                        .addComponent(btnGuardarDatos, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(238, 238, 238))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -221,10 +222,16 @@ public class DatosCliente extends javax.swing.JFrame {
 
     
     private void btnAtrasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAtrasActionPerformed
-        this.dispose();
         
-        AReservas aReservas = new AReservas();
-        aReservas.setVisible(true);
+        if("admin".equals(tipo)) {
+            AReservas aReservas = new AReservas("admin");
+            aReservas.setVisible(true);
+        } else {
+            AReservas aReservas = new AReservas("cliente");
+            aReservas.setVisible(true);
+        }
+        
+        this.dispose();
     }//GEN-LAST:event_btnAtrasActionPerformed
 
     private void btnGuardarDatosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarDatosActionPerformed
@@ -246,7 +253,7 @@ public class DatosCliente extends javax.swing.JFrame {
             }
 
             conn.InsertarCliente(dni, nombre, apellido, edad, telefono, email);
-            conn.InsertarReserva(idHabitacion, fechaInicio.toString(), fechaFin.toString(), (int) cantidadDias, precioTotal, dni);
+            conn.insertarReserva(idHabitacion, fechaInicio.toString(), fechaFin.toString(), (int) cantidadDias, precioTotal, dni);
 
             javax.swing.JOptionPane.showMessageDialog(this, "Reserva realizada con éxito.");
             this.dispose(); 
@@ -272,8 +279,7 @@ public class DatosCliente extends javax.swing.JFrame {
         }
 
         java.awt.EventQueue.invokeLater(() -> {
-            DBConnection conn = new DBConnection(); 
-            new AReservas().setVisible(true);       
+            DBConnection conn = new DBConnection();   
         });
     }
 
