@@ -18,19 +18,15 @@ import javax.swing.JPanel;
  *
  * @author Equipo
  */
-public class VerHabitacionesFrame extends javax.swing.JFrame {
+public class VerHabitacionesFrame extends javax.swing.JFrame implements ICardGenerator {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(VerHabitacionesFrame.class.getName());
-    DBConnection conn = new DBConnection();
-    /**
-     * Creates new form VerHabitacionesFrame
-     */
+    private DBConnection conn = new DBConnection();
+    
     public VerHabitacionesFrame() {
         initComponents();
-
         Cards.setLayout(new BoxLayout(Cards, BoxLayout.Y_AXIS));
         containerCards();
-        
     }
 
 
@@ -129,63 +125,36 @@ public class VerHabitacionesFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    
-    private void containerCards() {
-        List<Map<String, Object>> disponibles = conn.mostrarHabitaciones2();
+    @Override
+    public JPanel crearCard(Map<String, Object> datos) {
+        JPanel card = crearBaseCard();
         
-        Cards.removeAll();
-
-            if (disponibles.isEmpty()) {
-                javax.swing.JOptionPane.showMessageDialog(this, "No hay habitaciones disponibles.");
-            } else {
-                for (Map<String, Object> hab : disponibles) {
-                    Cards.add(crearCardHabitacion(hab));
-                }
-            }
-
-            Cards.setPreferredSize(new java.awt.Dimension(Cards.getWidth(), Cards.getComponentCount() * 140));
-            Cards.revalidate();
-            Cards.repaint();
-        
-    }
-    private javax.swing.JPanel crearCardHabitacion(Map<String, Object> hab) {
-        javax.swing.JPanel card = new javax.swing.JPanel(new java.awt.BorderLayout(10, 10));
-        card.setBorder(javax.swing.BorderFactory.createCompoundBorder(
-            javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5),
-            javax.swing.BorderFactory.createLineBorder(java.awt.Color.GRAY)
-        ));
-        card.setPreferredSize(new java.awt.Dimension(500, 180));
-        try {
-            javax.swing.ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource("img/habitacion.jpg"));
-            java.awt.Image scaledImg = icon.getImage().getScaledInstance(120, 130, java.awt.Image.SCALE_SMOOTH); 
-            javax.swing.JLabel imgLabel = new javax.swing.JLabel(new javax.swing.ImageIcon(scaledImg));
-            card.add(imgLabel, java.awt.BorderLayout.WEST);
-        } catch (Exception ex) {
-            System.err.println("No se pudo cargar la imagen: " + ex.getMessage());
-        }
-
-        javax.swing.JPanel content = new javax.swing.JPanel();
-        content.setLayout(new javax.swing.BoxLayout(content, javax.swing.BoxLayout.Y_AXIS));
+        JPanel content = new JPanel();
+        content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
         content.setOpaque(false);
-        int id = (int) hab.get("id");
-        int capacidad = (int) hab.get("personas");
-        float precioNoche = ((Float) hab.get("precio"));
-        int cDoble = (int) hab.get("dobles");
-        int cSimple = (int) hab.get("simples");
-        String disponibilidad = (String) hab.get("disponibilidad");
+        
+        int id = (int) datos.get("id");
+        int capacidad = (int) datos.get("personas");
+        float precioNoche = ((Float) datos.get("precio"));
+        int cDoble = (int) datos.get("dobles");
+        int cSimple = (int) datos.get("simples");
+        String disponibilidad = (String) datos.get("disponibilidad");
 
-        content.add(new javax.swing.JLabel("ID: " + id));
-        content.add(new javax.swing.JLabel("Capacidad: " + capacidad));
-        content.add(new javax.swing.JLabel("Precio por noche: $" + precioNoche));
-        content.add(new javax.swing.JLabel("Camas dobles: " + cDoble));
-        content.add(new javax.swing.JLabel("Camas simples: " + cSimple));
-        content.add(new javax.swing.JLabel("Disponibilidad: " + disponibilidad));
+        content.add(new JLabel("ID: " + id));
+        content.add(new JLabel("Capacidad: " + capacidad));
+        content.add(new JLabel("Precio por noche: $" + precioNoche));
+        content.add(new JLabel("Camas dobles: " + cDoble));
+        content.add(new JLabel("Camas simples: " + cSimple));
+        content.add(new JLabel("Disponibilidad: " + disponibilidad));
 
         card.add(content, BorderLayout.CENTER);
-
         return card;
-}
+    }
 
+    private void containerCards() {
+        List<Map<String, Object>> disponibles = conn.mostrarHabitaciones2();
+        containerCards(disponibles, Cards); 
+    }
 
     
     private void btnAtrasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAtrasActionPerformed
