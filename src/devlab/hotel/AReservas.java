@@ -1,14 +1,21 @@
 package devlab.hotel;
 
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.util.List;
 import java.util.Map;
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 /**
  *
  * @author Equipo
  */
-public class AReservas extends javax.swing.JFrame {
+public class AReservas extends javax.swing.JFrame implements ICardGenerator {
     private DBConnection conn;
     private java.time.LocalDate fechaInicio;
     private java.time.LocalDate fechaFin;
@@ -27,7 +34,7 @@ public class AReservas extends javax.swing.JFrame {
     Cards.setAutoscrolls(true); 
     jScrollPane1.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS); 
     configurarEventos();
-}
+    }
 
 
     /**
@@ -220,6 +227,46 @@ public class AReservas extends javax.swing.JFrame {
         btnBuscarHabitacion.addActionListener(e -> buscarHabitaciones());
     }
     
+    @Override
+    public JPanel crearCard(Map<String, Object> datos, boolean conBoton, String textoBoton) {
+        JPanel card = crearBaseCard();
+        
+        JPanel content = new JPanel();
+        content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
+        content.setOpaque(false);
+
+        int id = (int) datos.get("id");
+        int capacidad = (int) datos.get("Cantidad_personas");
+        float precioNoche = ((Float) datos.get("Precio_noche"));
+        float precioTotal = precioNoche * cantidadDias;
+        int cDoble = (int) datos.get("C_doble");
+        int cSimple = (int) datos.get("C_simple");
+
+        content.add(new JLabel("Capacidad: " + capacidad));
+        content.add(new JLabel("Precio por noche: $" + precioNoche));
+        content.add(new JLabel("Precio total: $" + precioTotal));
+        content.add(new JLabel("Camas dobles: " + cDoble));
+        content.add(new JLabel("Camas simples: " + cSimple));
+
+        if (conBoton) {
+            JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+            buttonPanel.setOpaque(false);
+            JButton reservarBtn = new JButton(textoBoton);
+            reservarBtn.setFont(new java.awt.Font("Segoe UI", 0, 10));
+            reservarBtn.addActionListener(e -> reservarHabitacion(id, precioTotal));
+            buttonPanel.add(reservarBtn);
+            content.add(buttonPanel);
+        }
+
+        card.add(content, BorderLayout.CENTER);
+        return card;
+    }
+
+    @Override
+    public JPanel crearCard(Map<String, Object> datos) {
+        return crearCard(datos, true, "Reservar");
+    }
+
     private void buscarHabitaciones() {
         try {
             int cantPersonas = Integer.parseInt(valorCantPersonas.getText().trim());
@@ -233,81 +280,39 @@ public class AReservas extends javax.swing.JFrame {
             }
 
             List<Map<String, Object>> disponibles = conn.ObtenerHabitacionesDisponiblesPorCapacidadYFecha(cantPersonas, fechaInicio, fechaFin);
-            Cards.removeAll(); // Limpiar resultados previos
-
-            if (disponibles.isEmpty()) {
-                javax.swing.JOptionPane.showMessageDialog(this, "No hay habitaciones disponibles.");
-            } else {
-                for (Map<String, Object> hab : disponibles) {
-                    Cards.add(crearCardHabitacion(hab));
-                }
-            }
-
-            Cards.setPreferredSize(new java.awt.Dimension(Cards.getWidth(), Cards.getComponentCount() * 140));
-            Cards.revalidate();
-            Cards.repaint();
             
+            containerCards(disponibles, Cards, true, "Reservar");
             
-
         } catch (NumberFormatException | java.time.format.DateTimeParseException ex) {
             javax.swing.JOptionPane.showMessageDialog(this, "Ingrese valores válidos (fechas en formato YYYY-MM-DD).");
         }
     }
-    
-    private javax.swing.JPanel crearCardHabitacion(Map<String, Object> hab) {
-        javax.swing.JPanel card = new javax.swing.JPanel(new java.awt.BorderLayout(10, 10));
-        card.setBorder(javax.swing.BorderFactory.createCompoundBorder(
-            javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5),
-            javax.swing.BorderFactory.createLineBorder(java.awt.Color.GRAY)
-        ));
-        card.setPreferredSize(new java.awt.Dimension(500, 130));
-
-        try {
-            javax.swing.ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource("img/habitacion.jpg"));
-            java.awt.Image scaledImg = icon.getImage().getScaledInstance(120, 130, java.awt.Image.SCALE_SMOOTH); 
-            javax.swing.JLabel imgLabel = new javax.swing.JLabel(new javax.swing.ImageIcon(scaledImg));
-            card.add(imgLabel, java.awt.BorderLayout.WEST);
-        } catch (Exception ex) {
-            System.err.println("No se pudo cargar la imagen: " + ex.getMessage());
-        }
-
-        javax.swing.JPanel content = new javax.swing.JPanel();
-        content.setLayout(new javax.swing.BoxLayout(content, javax.swing.BoxLayout.Y_AXIS));
-        content.setOpaque(false);
-
-        int id = (int) hab.get("id");
-        int capacidad = (int) hab.get("Cantidad_personas");
-        float precioNoche = ((Float) hab.get("Precio_noche"));
-        float precioTotal = precioNoche * cantidadDias;
-        int cDoble = (int) hab.get("C_doble");
-        int cSimple = (int) hab.get("C_simple");
-
-        content.add(new javax.swing.JLabel("Capacidad: " + capacidad));
-        content.add(new javax.swing.JLabel("Precio por noche: $" + precioNoche));
-        content.add(new javax.swing.JLabel("Precio total: $" + precioTotal));
-        content.add(new javax.swing.JLabel("Camas dobles: " + cDoble));
-        content.add(new javax.swing.JLabel("Camas simples: " + cSimple));
-
-        javax.swing.JPanel buttonPanel = new javax.swing.JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
-        buttonPanel.setOpaque(false);
-        javax.swing.JButton reservarBtn = new javax.swing.JButton("Reservar");
-        reservarBtn.setFont(new java.awt.Font("Segoe UI", 0, 10));
-        reservarBtn.addActionListener(e -> reservarHabitacion(id, precioTotal));
-        buttonPanel.add(reservarBtn);
-
-        content.add(buttonPanel); 
-
-        card.add(content, java.awt.BorderLayout.CENTER);
-
-        return card;
-    }
-
 
     
     private void reservarHabitacion(int idHabitacion, float precioTotal) {
-
         DatosCliente datosCliente = new DatosCliente(conn, idHabitacion, fechaInicio, fechaFin, cantidadDias, precioTotal);
-        datosCliente.setVisible(true);
+
+        JDialog dialog = new JDialog();
+        dialog.setModal(true);
+        dialog.setTitle("Datos del Cliente");
+        dialog.setContentPane(datosCliente.getContentPane());
+        dialog.pack();
+        dialog.setLocationRelativeTo(this);
+
+        dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosed(java.awt.event.WindowEvent e) {
+                buscarHabitaciones();
+                JOptionPane.showMessageDialog(AReservas.this, 
+                    "¡Reserva completada! Listado actualizado.", 
+                    "Éxito", 
+                    JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
+
+        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        dialog.setVisible(true);
+        dialog.dispose();
     }
 
 

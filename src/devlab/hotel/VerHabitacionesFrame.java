@@ -126,7 +126,8 @@ public class VerHabitacionesFrame extends javax.swing.JFrame implements ICardGen
     }// </editor-fold>//GEN-END:initComponents
 
     @Override
-    public JPanel crearCard(Map<String, Object> datos) {
+    public JPanel crearCard(Map<String, Object> datos, boolean conBoton, String textoBoton) {
+        // Implementación con parámetros de botón (aunque no lo usaremos)
         JPanel card = crearBaseCard();
         
         JPanel content = new JPanel();
@@ -147,13 +148,21 @@ public class VerHabitacionesFrame extends javax.swing.JFrame implements ICardGen
         content.add(new JLabel("Camas simples: " + cSimple));
         content.add(new JLabel("Disponibilidad: " + disponibilidad));
 
+        // No añadimos botón ya que conBoton será false
         card.add(content, BorderLayout.CENTER);
         return card;
     }
 
+    @Override
+    public JPanel crearCard(Map<String, Object> datos) {
+        // Implementación simplificada que llama a la principal con false
+        return crearCard(datos, false, "");
+    }
+
     private void containerCards() {
         List<Map<String, Object>> disponibles = conn.mostrarHabitaciones2();
-        containerCards(disponibles, Cards); 
+        // Llamamos al método con parámetros de botón (false para sin botón)
+        containerCards(disponibles, Cards, false, ""); 
     }
 
     

@@ -6,16 +6,21 @@ import java.util.Map;
 import javax.swing.JPanel;
 
 public interface ICardGenerator {
-    JPanel crearCard(Map<String, Object> datos);
+    JPanel crearCard(Map<String, Object> datos, boolean conBoton, String textoBoton);
     
-    default void containerCards(List<Map<String, Object>> datos, JPanel contenedor) {
+    // Método default con implementación básica
+    default JPanel crearCard(Map<String, Object> datos) {
+        return crearCard(datos, false, ""); // Llama al método principal con valores por defecto
+    }
+    
+    default void containerCards(List<Map<String, Object>> datos, JPanel contenedor, boolean conBoton, String textoBoton) {
         contenedor.removeAll();
 
         if (datos.isEmpty()) {
             javax.swing.JOptionPane.showMessageDialog(null, "No hay datos disponibles.");
         } else {
             for (Map<String, Object> item : datos) {
-                contenedor.add(crearCard(item));
+                contenedor.add(crearCard(item, conBoton, textoBoton));
             }
         }
 

@@ -1,18 +1,16 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package devlab.hotel;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -21,13 +19,9 @@ import javax.swing.JPanel;
  *
  * @author Equipo
  */
-public class EliminarReservasFrame extends javax.swing.JFrame {
+public class EliminarReservasFrame extends javax.swing.JFrame implements ICardGenerator {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(EliminarReservasFrame.class.getName());
-
-    /**
-     * Creates new form EliminarReservasFrame
-     */
     private DBConnection conn;
 
     public EliminarReservasFrame(DBConnection conn) {
@@ -35,7 +29,6 @@ public class EliminarReservasFrame extends javax.swing.JFrame {
         initComponents();
         Cards.setLayout(new javax.swing.BoxLayout(Cards, javax.swing.BoxLayout.Y_AXIS));
     }
-
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -181,54 +174,24 @@ public class EliminarReservasFrame extends javax.swing.JFrame {
         }
 
         List<Map<String, Object>> disponibles = conn.ObtenerReservasPorDNI(dni);
-        
-        Cards.removeAll();
-
-            if (disponibles.isEmpty()) {
-                javax.swing.JOptionPane.showMessageDialog(this, "No hay habitaciones disponibles.");
-            } else {
-                for (Map<String, Object> hab : disponibles) {
-                    Cards.add(crearCardReserva(hab));
-                }
-            }
-
-            Cards.setPreferredSize(new java.awt.Dimension(Cards.getWidth(), Cards.getComponentCount() * 140));
-            Cards.revalidate();
-            Cards.repaint();
-        
+        containerCards(disponibles, Cards, true, "Eliminar reserva");
     }
     
-    private javax.swing.JPanel crearCardReserva(Map<String, Object> hab) {
-        javax.swing.JPanel card = new javax.swing.JPanel(new java.awt.BorderLayout(10, 10));
-        card.setBorder(javax.swing.BorderFactory.createCompoundBorder(
-            javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5),
-            javax.swing.BorderFactory.createLineBorder(java.awt.Color.GRAY)
-        ));
-        card.setPreferredSize(new java.awt.Dimension(500, 130));
-
-        try {
-            javax.swing.ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource("img/habitacion.jpg"));
-            java.awt.Image scaledImg = icon.getImage().getScaledInstance(120, 130, java.awt.Image.SCALE_SMOOTH); 
-            javax.swing.JLabel imgLabel = new javax.swing.JLabel(new javax.swing.ImageIcon(scaledImg));
-            card.add(imgLabel, java.awt.BorderLayout.WEST);
-        } catch (Exception ex) {
-            System.err.println("No se pudo cargar la imagen: " + ex.getMessage());
-        }
-
-        javax.swing.JPanel content = new javax.swing.JPanel();
-        content.setLayout(new javax.swing.BoxLayout(content, javax.swing.BoxLayout.Y_AXIS));
+    @Override
+    public JPanel crearCard(Map<String, Object> datos, boolean conBoton, String textoBoton) {
+        JPanel card = crearBaseCard();
+        JPanel content = new JPanel();
+        content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
         content.setOpaque(false);
-        
 
-        int ID = (int) hab.get("id_reserva");
-        var fecha = hab.get("fecha_inicio");
-        content.add(new JLabel("ID de reserva: " + ID));
-        content.add(new JLabel("ID de habitación: " + hab.get("id_habitacion")));
+        int ID = (int) datos.get("id_reserva");
+        var fecha = datos.get("fecha_inicio");
+        
         content.add(new JLabel("Fecha de inicio: " + fecha));
-        content.add(new JLabel("Fecha de fin: " + hab.get("fecha_fin")));
-        content.add(new JLabel("Cantidad de dias: " + hab.get("Cantidad_dias")));
-        content.add(new JLabel("Precio total: $" + hab.get("Precio_total")));
-        content.add(new JLabel("DNI del cliente: " + hab.get("DNI_cliente")));
+        content.add(new JLabel("Fecha de fin: " + datos.get("fecha_fin")));
+        content.add(new JLabel("Cantidad de dias: " + datos.get("Cantidad_dias")));
+        content.add(new JLabel("Precio total: $" + datos.get("Precio_total")));
+        content.add(new JLabel("DNI del cliente: " + datos.get("DNI_cliente")));
         
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         
@@ -236,28 +199,29 @@ public class EliminarReservasFrame extends javax.swing.JFrame {
             LocalDate hoy = LocalDate.now();
             LocalDate fechaInicio = LocalDate.parse((CharSequence) fecha, formatter);
 
-            javax.swing.JPanel buttonPanel = new javax.swing.JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
-            buttonPanel.setOpaque(false);
-            javax.swing.JButton reservarBtn = new javax.swing.JButton("Eliminar reserva");
-            reservarBtn.setFont(new java.awt.Font("Segoe UI", 0, 10));
-            reservarBtn.addActionListener(e -> {
-                if (!fechaInicio.isAfter(hoy)) {
-                    javax.swing.JOptionPane.showMessageDialog(this, "La reserva ya está en curso, no puede ser eliminada o cancelada");
-                } else {
-                    conn.EliminarReserva(ID);
-                    javax.swing.JOptionPane.showMessageDialog(this, "Se Eliminó correctamente su reserva");
-                    containerCards();
-                }
-            });
-            buttonPanel.add(reservarBtn);
-            content.add(buttonPanel); 
+            if (conBoton) {
+                JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+                buttonPanel.setOpaque(false);
+                JButton eliminarBtn = new JButton(textoBoton);
+                eliminarBtn.setFont(new java.awt.Font("Segoe UI", 0, 10));
+                eliminarBtn.addActionListener(e -> {
+                    if (!fechaInicio.isAfter(hoy)) {
+                        JOptionPane.showMessageDialog(this, "La reserva ya está en curso, no puede ser eliminada o cancelada");
+                    } else {
+                        conn.EliminarReserva(ID);
+                        JOptionPane.showMessageDialog(this, "Se Eliminó correctamente su reserva");
+                        containerCards();
+                    }
+                });
+                buttonPanel.add(eliminarBtn);
+                content.add(buttonPanel); 
+            }
             
         } catch (Exception e) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Formato de fecha inválido.");
+            JOptionPane.showMessageDialog(this, "Formato de fecha inválido.");
         }
 
-        card.add(content, java.awt.BorderLayout.CENTER);
-
+        card.add(content, BorderLayout.CENTER);
         return card;
     }
     /**
